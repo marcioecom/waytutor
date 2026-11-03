@@ -1,0 +1,26 @@
+api = apps/api
+
+.PHONY: dev migrate test fmt vet build check
+
+dev:
+	cd $(api) && go run ./cmd/api
+
+migrate:
+	cd $(api) && go run ./cmd/migrate
+
+test:
+	cd $(api) && go test ./...
+
+fmt:
+	cd $(api) && gofmt -w .
+
+vet:
+	cd $(api) && go vet ./...
+
+build:
+	cd $(api) && go build ./...
+
+check:
+	@cd $(api) && test -z "$$(gofmt -l .)" || (gofmt -l . && exit 1)
+	cd $(api) && go vet ./...
+	cd $(api) && go test ./...
