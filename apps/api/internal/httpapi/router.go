@@ -35,7 +35,7 @@ func New(s *store.Store, a *auth.Authenticator) http.Handler {
 	mux.HandleFunc("POST /v1/auth/logout", h.logout)
 	mux.HandleFunc("GET /v1/me", h.authenticated(h.me))
 
-	return recoverer(requestLog(mux))
+	return requestLog(cors(recoverer(mux)))
 }
 
 func (h *api) health(w http.ResponseWriter, r *http.Request) {

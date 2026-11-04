@@ -1,4 +1,5 @@
 api = apps/api
+extension = apps/extension
 
 .PHONY: up down dev migrate test fmt vet build check
 
@@ -25,8 +26,10 @@ vet:
 
 build:
 	cd $(api) && go build ./...
+	cd $(extension) && npm run build
 
 check:
 	@cd $(api) && test -z "$$(gofmt -l .)" || (gofmt -l . && exit 1)
 	cd $(api) && go vet ./...
 	cd $(api) && go test ./...
+	cd $(extension) && npm run typecheck

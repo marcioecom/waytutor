@@ -7,8 +7,8 @@ Conventions for this repository. Read this before adding or changing code.
 English everywhere: identifiers, comments, docs, commit messages, branch names,
 error codes, log fields. Portuguese appears in two places only:
 
-- extension UI copy (`apps/extension/modules/*/ui`, `i18n.ts`)
-- the map from backend error code to user message
+- extension UI copy (`apps/extension/modules/*/ui`)
+- the map from backend error code to user message (`modules/*/messages.ts`)
 
 An English string that reaches a user is a bug. A Portuguese string inside Go is
 a bug.

@@ -1,0 +1,35 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-night: #17120e;
+  --color-night-2: #1d1712;
+  --color-night-3: #251d15;
+  --color-night-4: #2e241a;
+
+  --color-line: #342a20;
+  --color-line-2: #4a3a2b;
+
+  --color-ink: #f4ead9;
+  --color-ink-muted: #c3b19a;
+  --color-ink-faint: #8a7a68;
+
+  --color-lamp: #f0a63c;
+  --color-lamp-bright: #ffb64f;
+
+  --color-danger: #f0a08c;
+  --color-danger-bg: #2a1714;
+
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Fraunces', Georgia, serif;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-night text-ink font-sans antialiased;
+}
