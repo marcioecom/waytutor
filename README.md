@@ -9,21 +9,39 @@ produces a spoken summary grounded in that material.
 
 ## Requirements
 
+- Docker, for the local database and stack
 - Node 22+
 - Go 1.26+
-- A PostgreSQL database (Neon)
+- A PostgreSQL database (Neon) for anything beyond local work
 
 ## Run
 
-```sh
-cp apps/api/.env.example apps/api/.env   # fill DATABASE_URL
-make migrate
-make dev                                 # api on :8080
+The whole stack — database, migrations, api on `:8080`:
 
+```sh
+make up
+make down
+```
+
+Just the api, against the compose database:
+
+```sh
+docker compose up -d db
+cp apps/api/.env.example apps/api/.env
+make migrate
+make dev
+```
+
+The extension:
+
+```sh
 cd apps/extension && npm install && npm run dev
 ```
 
 Load `apps/extension/.output/chrome-mv3` as an unpacked extension.
+
+For an external database, point `DATABASE_URL` at Neon with `sslmode=require`.
+Keep the local Postgres major version in step with Neon's.
 
 ## Check
 

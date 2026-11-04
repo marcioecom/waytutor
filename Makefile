@@ -1,6 +1,12 @@
 api = apps/api
 
-.PHONY: dev migrate test fmt vet build check
+.PHONY: up down dev migrate test fmt vet build check
+
+up:
+	docker compose up --build
+
+down:
+	docker compose down
 
 dev:
 	cd $(api) && go run ./cmd/api
