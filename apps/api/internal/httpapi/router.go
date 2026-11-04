@@ -8,6 +8,9 @@ import (
 	"time"
 
 	"github.com/marciojunior/waytutor/apps/api/internal/auth"
+	"github.com/marciojunior/waytutor/apps/api/internal/cache"
+	"github.com/marciojunior/waytutor/apps/api/internal/ratelimit"
+	"github.com/marciojunior/waytutor/apps/api/internal/speech"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
 )
 
@@ -19,13 +22,38 @@ type errorBody struct {
 	Code string `json:"code"`
 }
 
-type api struct {
-	store *store.Store
-	auth  *auth.Authenticator
+type Limits struct {
+	MonthlyCharsPerAccount int64
+	GlobalMonthlyChars     int64
+	RatePerMinute          int
 }
 
-func New(s *store.Store, a *auth.Authenticator) http.Handler {
-	h := &api{store: s, auth: a}
+type Deps struct {
+	Store  *store.Store
+	Auth   *auth.Authenticator
+	Cache  cache.Cache
+	Speech *speech.Synthesizer
+	Limits Limits
+}
+
+type api struct {
+	store   *store.Store
+	auth    *auth.Authenticator
+	cache   cache.Cache
+	speech  *speech.Synthesizer
+	limiter *ratelimit.Limiter
+	limits  Limits
+}
+
+func New(d Deps) http.Handler {
+	h := &api{
+		store:   d.Store,
+		auth:    d.Auth,
+		cache:   d.Cache,
+		speech:  d.Speech,
+		limiter: ratelimit.New(d.Limits.RatePerMinute),
+		limits:  d.Limits,
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", h.health)
@@ -34,6 +62,7 @@ func New(s *store.Store, a *auth.Authenticator) http.Handler {
 	mux.HandleFunc("POST /v1/auth/exchange", h.exchange)
 	mux.HandleFunc("POST /v1/auth/logout", h.logout)
 	mux.HandleFunc("GET /v1/me", h.authenticated(h.me))
+	mux.HandleFunc("POST /v1/tts", h.authenticated(h.tts))
 
 	return requestLog(cors(recoverer(mux)))
 }

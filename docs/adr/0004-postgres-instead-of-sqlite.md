@@ -15,6 +15,10 @@ suspended Neon project adds latency to the first request. Migrations must be
 additive and run before the new release starts, which `cmd/migrate` does as the
 Fly release command.
 
+Audio follows the same reasoning: production has no volume, so the cache lives
+in R2. On a laptop the same code caches on disk, which is why the cache is an
+interface and not a direct R2 call.
+
 **Rejected:** SQLite with Litestream (more moving parts, restore drills on us),
 Fly Postgres (we operate it), Turso/libSQL (a second dialect to learn for no
 gain at this size).

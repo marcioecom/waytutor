@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"github.com/marciojunior/waytutor/apps/api/internal/auth"
+	"github.com/marciojunior/waytutor/apps/api/internal/cache"
 	"github.com/marciojunior/waytutor/apps/api/internal/config"
 	"github.com/marciojunior/waytutor/apps/api/internal/httpapi"
+	"github.com/marciojunior/waytutor/apps/api/internal/speech"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
 )
 
@@ -46,9 +48,24 @@ func run() error {
 		StateSecret:  cfg.OAuthStateSecret,
 	})
 
+	audioCache, err := newCache(cfg)
+	if err != nil {
+		return err
+	}
+
 	srv := &http.Server{
-		Addr:              cfg.Addr,
-		Handler:           httpapi.New(db, authenticator),
+		Addr: cfg.Addr,
+		Handler: httpapi.New(httpapi.Deps{
+			Store:  db,
+			Auth:   authenticator,
+			Cache:  audioCache,
+			Speech: speech.New(cfg.GatewayAPIKey, speech.APIBaseURL),
+			Limits: httpapi.Limits{
+				MonthlyCharsPerAccount: cfg.MonthlyCharsPerAccount,
+				GlobalMonthlyChars:     cfg.GlobalMonthlyChars,
+				RatePerMinute:          cfg.RatePerMinute,
+			},
+		}),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -70,4 +87,24 @@ func run() error {
 		return fmt.Errorf("shutdown server: %w", err)
 	}
 	return nil
+}
+
+// Production has no volume, so it caches in R2; a laptop caches on disk.
+func newCache(cfg config.Config) (cache.Cache, error) {
+	if cfg.R2Enabled() {
+		return cache.NewR2(cache.R2Config{
+			Endpoint:        cfg.R2Endpoint,
+			Bucket:          cfg.R2Bucket,
+			AccessKeyID:     cfg.R2AccessKeyID,
+			SecretAccessKey: cfg.R2SecretAccessKey,
+			Region:          cfg.R2Region,
+		}), nil
+	}
+
+	disk, err := cache.NewDisk(cfg.CacheDir)
+	if err != nil {
+		return nil, err
+	}
+	slog.Warn("R2 is not configured, caching audio on disk", "dir", cfg.CacheDir)
+	return disk, nil
 }

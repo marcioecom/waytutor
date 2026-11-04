@@ -9,6 +9,7 @@ func requiredEnv(t *testing.T) {
 	t.Setenv("GOOGLE_CLIENT_ID", "client-id")
 	t.Setenv("GOOGLE_CLIENT_SECRET", "client-secret")
 	t.Setenv("OAUTH_STATE_SECRET", "0123456789abcdef")
+	t.Setenv("AI_GATEWAY_API_KEY", "gateway-key")
 }
 
 func TestLoadAppliesDefaultsAndNormalizesBaseURL(t *testing.T) {
@@ -16,6 +17,9 @@ func TestLoadAppliesDefaultsAndNormalizesBaseURL(t *testing.T) {
 	t.Setenv("ENV", "")
 	t.Setenv("ADDR", "")
 	t.Setenv("LOG_LEVEL", "")
+	t.Setenv("MONTHLY_CHARS_PER_ACCOUNT", "")
+	t.Setenv("GLOBAL_MONTHLY_CHARS", "")
+	t.Setenv("RATE_PER_MINUTE", "")
 
 	cfg, err := Load()
 	if err != nil {
@@ -34,6 +38,18 @@ func TestLoadAppliesDefaultsAndNormalizesBaseURL(t *testing.T) {
 	if cfg.Level() != 0 {
 		t.Errorf("Level() = %v, want info", cfg.Level())
 	}
+	if cfg.MonthlyCharsPerAccount != 500_000 {
+		t.Errorf("MonthlyCharsPerAccount = %d, want 500000", cfg.MonthlyCharsPerAccount)
+	}
+	if cfg.GlobalMonthlyChars != 6_000_000 {
+		t.Errorf("GlobalMonthlyChars = %d, want 6000000", cfg.GlobalMonthlyChars)
+	}
+	if cfg.RatePerMinute != 40 {
+		t.Errorf("RatePerMinute = %d, want 40", cfg.RatePerMinute)
+	}
+	if cfg.R2Enabled() {
+		t.Error("R2Enabled() = true, want the disk cache by default")
+	}
 }
 
 func TestLoadRequiresEverySecret(t *testing.T) {
@@ -46,6 +62,7 @@ func TestLoadRequiresEverySecret(t *testing.T) {
 		{"google client id", "GOOGLE_CLIENT_ID"},
 		{"google client secret", "GOOGLE_CLIENT_SECRET"},
 		{"oauth state secret", "OAUTH_STATE_SECRET"},
+		{"gateway api key", "AI_GATEWAY_API_KEY"},
 	}
 
 	for _, tt := range tests {
@@ -69,23 +86,38 @@ func TestLoadRejectsShortOAuthStateSecret(t *testing.T) {
 	}
 }
 
-func TestLoadDatabaseURLRequiresValue(t *testing.T) {
-	t.Setenv("DATABASE_URL", "")
+func TestLoadRejectsGlobalQuotaBelowTheAccountQuota(t *testing.T) {
+	requiredEnv(t)
+	t.Setenv("MONTHLY_CHARS_PER_ACCOUNT", "900000")
+	t.Setenv("GLOBAL_MONTHLY_CHARS", "100000")
 
-	if _, err := LoadDatabaseURL(); err == nil {
-		t.Fatal("LoadDatabaseURL() error = nil, want an error for a missing DATABASE_URL")
+	if _, err := Load(); err == nil {
+		t.Fatal("Load() error = nil, want an error when the global quota is below the account quota")
 	}
 }
 
-func TestLoadDatabaseURL(t *testing.T) {
-	t.Setenv("DATABASE_URL", "postgres://user:pass@localhost:5432/waytutor?sslmode=disable")
+func TestLoadAcceptsACompleteR2Group(t *testing.T) {
+	requiredEnv(t)
+	t.Setenv("R2_ENDPOINT", "https://account.r2.cloudflarestorage.com")
+	t.Setenv("R2_BUCKET", "waytutor-audio")
+	t.Setenv("R2_ACCESS_KEY_ID", "key")
+	t.Setenv("R2_SECRET_ACCESS_KEY", "secret")
 
-	dsn, err := LoadDatabaseURL()
+	cfg, err := Load()
 	if err != nil {
-		t.Fatalf("LoadDatabaseURL() error = %v", err)
+		t.Fatalf("Load() error = %v", err)
 	}
-	if dsn == "" {
-		t.Fatal("LoadDatabaseURL() returned an empty dsn")
+	if !cfg.R2Enabled() {
+		t.Error("R2Enabled() = false, want true")
+	}
+}
+
+func TestLoadRejectsAPartialR2Group(t *testing.T) {
+	requiredEnv(t)
+	t.Setenv("R2_BUCKET", "waytutor-audio")
+
+	if _, err := Load(); err == nil {
+		t.Fatal("Load() error = nil, want an error for a partial R2 configuration")
 	}
 }
 
@@ -95,5 +127,13 @@ func TestLoadRejectsUnknownEnv(t *testing.T) {
 
 	if _, err := Load(); err == nil {
 		t.Fatal("Load() error = nil, want an error for an unknown ENV")
+	}
+}
+
+func TestLoadDatabaseURLRequiresValue(t *testing.T) {
+	t.Setenv("DATABASE_URL", "")
+
+	if _, err := LoadDatabaseURL(); err == nil {
+		t.Fatal("LoadDatabaseURL() error = nil, want an error for a missing DATABASE_URL")
 	}
 }

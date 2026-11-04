@@ -75,10 +75,23 @@ psql "$DATABASE_URL" -c "UPDATE accounts SET status = 'active', updated_at = now
 | POST | `/v1/auth/exchange` | — |
 | POST | `/v1/auth/logout` | bearer |
 | GET | `/v1/me` | bearer |
+| POST | `/v1/tts` | bearer |
 
-Errors are `{"error":{"code":"..."}}`, and `code` is one of `invalid_request`,
+Errors are `{"error":{"code":"..."}}` with an English code: `invalid_request`,
 `invalid_redirect_uri`, `invalid_state`, `invalid_code`, `oauth_failed`,
-`unauthenticated`, `approval_required`, `account_paused`, `internal_error`.
+`unauthenticated`, `approval_required`, `account_paused`, `empty_text`,
+`text_too_long`, `unknown_voice`, `quota_exceeded`, `rate_limited`,
+`provider_auth`, `provider_quota`, `provider_error`, `internal_error`.
+
+`POST /v1/tts` takes `{"text": "...", "voice": "Kore"}` and returns the WAV
+bytes. The same text, voice and instructions always hit the same cache object,
+and a cache hit does not consume quota.
+
+## Audio cache
+
+Without `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
+the server caches audio in `CACHE_DIR`. Production sets all four and the machine
+becomes stateless.
 
 ## Check
 

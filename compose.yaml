@@ -30,11 +30,15 @@ services:
     environment:
       ENV: development
       DATABASE_URL: postgres://waytutor:waytutor@db:5432/waytutor?sslmode=disable
+      CACHE_DIR: /data/audio
     ports:
       - "8080:8080"
+    volumes:
+      - audiocache:/data/audio
     depends_on:
       migrate:
         condition: service_completed_successfully
 
 volumes:
   pgdata:
+  audiocache:

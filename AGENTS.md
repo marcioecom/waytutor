@@ -61,6 +61,8 @@ Review criteria, not suggestions.
 - An error body is `{"error":{"code":"quota_exceeded"}}`. There is no `message`.
 - Auth is an opaque bearer token, never a cookie.
 - Every body goes through `http.MaxBytesReader`.
+- A Passage's audio is cached under the hash of everything that changes it:
+  model, voice, instructions, format and text. A cache hit costs no quota.
 - Audio responses carry `ETag` and `Cache-Control: immutable`.
 
 ## TypeScript and the extension
