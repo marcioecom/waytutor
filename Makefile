@@ -17,6 +17,7 @@ migrate:
 
 test:
 	cd $(api) && go test ./...
+	cd $(extension) && npm test
 
 fmt:
 	cd $(api) && gofmt -w .
@@ -31,5 +32,5 @@ build:
 check:
 	@cd $(api) && test -z "$$(gofmt -l .)" || (gofmt -l . && exit 1)
 	cd $(api) && go vet ./...
-	cd $(api) && go test ./...
+	make test
 	cd $(extension) && npm run typecheck

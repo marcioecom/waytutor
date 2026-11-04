@@ -4,13 +4,14 @@ import { useAccount } from '@/modules/account/hooks/use-account'
 import { messageFor } from '@/modules/account/messages'
 import { BlockedView } from '@/modules/account/ui/blocked-view'
 import { LoginView } from '@/modules/account/ui/login-view'
-import { ReadyView } from '@/modules/account/ui/ready-view'
+import { SessionFooter } from '@/modules/account/ui/session-footer'
+import { MaterialView } from '@/modules/material/ui/material-view'
 
 export function App() {
   const account = useAccount()
 
   return (
-    <main className="flex min-h-dvh flex-col gap-6 bg-night px-5 py-6">
+    <main className="flex h-dvh flex-col gap-5 overflow-hidden bg-night px-5 py-6">
       <header>
         <p className="font-serif text-xl text-lamp">WayTutor</p>
         <p className="text-sm text-ink-faint">professor de bolso</p>
@@ -57,6 +58,11 @@ function Screen({ account }: { account: ReturnType<typeof useAccount> }) {
         />
       )
     case 'active':
-      return <ReadyView account={account.data.account} />
+      return (
+        <div className="flex min-h-0 flex-1 flex-col gap-4">
+          <MaterialView />
+          <SessionFooter account={account.data.account} />
+        </div>
+      )
   }
 }
