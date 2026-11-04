@@ -13,11 +13,12 @@ import (
 )
 
 type Config struct {
-	Env                string `env:"ENV" envDefault:"development" validate:"oneof=development production"`
-	Addr               string `env:"ADDR" envDefault:":8080" validate:"required"`
-	BaseURL            string `env:"BASE_URL" validate:"required,url"`
-	DatabaseURL        string `env:"DATABASE_URL" validate:"required,url"`
-	LogLevel           string `env:"LOG_LEVEL" envDefault:"info" validate:"oneof=debug info warn error"`
+	Env         string `env:"ENV" envDefault:"development" validate:"oneof=development production"`
+	Addr        string `env:"ADDR" envDefault:":8080" validate:"required"`
+	BaseURL     string `env:"BASE_URL" validate:"required,url"`
+	DatabaseURL string `env:"DATABASE_URL" validate:"required,url"`
+	LogLevel    string `env:"LOG_LEVEL" envDefault:"info" validate:"oneof=debug info warn error"`
+
 	GoogleClientID     string `env:"GOOGLE_CLIENT_ID" validate:"required"`
 	GoogleClientSecret string `env:"GOOGLE_CLIENT_SECRET" validate:"required"`
 	OAuthStateSecret   string `env:"OAUTH_STATE_SECRET" validate:"required,min=16"`
