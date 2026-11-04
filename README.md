@@ -43,6 +43,41 @@ Load `apps/extension/.output/chrome-mv3` as an unpacked extension.
 For an external database, point `DATABASE_URL` at Neon with `sslmode=require`.
 Keep the local Postgres major version in step with Neon's.
 
+## Login
+
+The extension signs in through Google. In the Google Cloud console, create an
+OAuth web client and add both redirect URIs:
+
+```
+http://localhost:8080/auth/google/callback
+https://waytutor-api.marcio.run/auth/google/callback
+```
+
+Then fill `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OAUTH_STATE_SECRET` (16
+characters or more) and `BASE_URL` in `apps/api/.env`.
+
+New accounts are created with `status = 'pending'` and cannot use the API until
+approved:
+
+```sh
+psql "$DATABASE_URL" -c "UPDATE accounts SET status = 'active', updated_at = now() WHERE email = 'someone@example.com'"
+```
+
+## API
+
+| Method | Path | Auth |
+| --- | --- | --- |
+| GET | `/healthz` | — |
+| GET | `/auth/google?redirect_uri=` | — |
+| GET | `/auth/google/callback` | — |
+| POST | `/v1/auth/exchange` | — |
+| POST | `/v1/auth/logout` | bearer |
+| GET | `/v1/me` | bearer |
+
+Errors are `{"error":{"code":"..."}}`, and `code` is one of `invalid_request`,
+`invalid_redirect_uri`, `invalid_state`, `invalid_code`, `oauth_failed`,
+`unauthenticated`, `approval_required`, `account_paused`, `internal_error`.
+
 ## Check
 
 ```sh

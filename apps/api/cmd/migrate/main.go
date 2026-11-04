@@ -21,12 +21,12 @@ func main() {
 }
 
 func run() error {
-	cfg, err := config.Load()
+	dsn, err := config.LoadDatabaseURL()
 	if err != nil {
 		return err
 	}
 
-	db, err := sql.Open("pgx", cfg.DatabaseURL)
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return fmt.Errorf("open database: %w", err)
 	}

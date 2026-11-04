@@ -26,6 +26,7 @@ services:
 
   api:
     build: apps/api
+    env_file: apps/api/.env
     environment:
       ENV: development
       DATABASE_URL: postgres://waytutor:waytutor@db:5432/waytutor?sslmode=disable

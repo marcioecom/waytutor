@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/marciojunior/waytutor/apps/api/internal/auth"
 	"github.com/marciojunior/waytutor/apps/api/internal/config"
 	"github.com/marciojunior/waytutor/apps/api/internal/httpapi"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
@@ -38,9 +39,16 @@ func run() error {
 	}
 	defer db.Close()
 
+	authenticator := auth.New(auth.Config{
+		ClientID:     cfg.GoogleClientID,
+		ClientSecret: cfg.GoogleClientSecret,
+		CallbackURL:  cfg.BaseURL + "/auth/google/callback",
+		StateSecret:  cfg.OAuthStateSecret,
+	})
+
 	srv := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           httpapi.New(db),
+		Handler:           httpapi.New(db, authenticator),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
