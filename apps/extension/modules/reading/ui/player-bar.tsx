@@ -1,4 +1,5 @@
 import { Button } from '@/components/button'
+import { Spinner } from '@/components/spinner'
 import { messageForCode } from '@/modules/account/messages'
 import type { ReadingStatus } from '../hooks/use-reading'
 
@@ -34,10 +35,11 @@ export function PlayerBar({ status, index, total, errorCode, onToggle, onPreviou
         </Button>
 
         <Button
-          className="flex-1"
+          className="inline-flex flex-1 items-center justify-center gap-2"
           onClick={onToggle}
           disabled={total === 0 || status === 'loading'}
         >
+          {status === 'loading' ? <Spinner /> : null}
           {labels[status]}
         </Button>
 

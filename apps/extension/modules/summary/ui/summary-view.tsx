@@ -1,4 +1,5 @@
 import { Button } from '@/components/button'
+import { Spinner } from '@/components/spinner'
 import { messageFor } from '@/modules/account/messages'
 import type { ReadingStatus } from '@/modules/reading/hooks/use-reading'
 import { useSummary } from '../hooks/use-summary'
@@ -32,7 +33,12 @@ export function SummaryView({ materialId, materialText, status, onSpeak, onToggl
         </Button>
       </div>
 
-      {summary.isPending ? <p className="text-sm text-ink-faint">Preparando o resumo…</p> : null}
+      {summary.isPending ? (
+        <p className="flex h-5 items-center gap-2 text-sm text-ink-faint">
+          <Spinner />
+          Preparando o resumo…
+        </p>
+      ) : null}
 
       {summary.isError ? (
         <div className="flex flex-col gap-3">
@@ -51,9 +57,11 @@ export function SummaryView({ materialId, materialText, status, onSpeak, onToggl
 
       {text ? (
         <Button
+          className="inline-flex items-center gap-2"
           onClick={() => (status === 'idle' ? onSpeak(text) : onToggle())}
           disabled={status === 'loading'}
         >
+          {status === 'loading' ? <Spinner /> : null}
           {labels[status]}
         </Button>
       ) : null}

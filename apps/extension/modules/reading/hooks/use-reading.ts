@@ -45,7 +45,6 @@ export function useReading({
       const token = await readToken()
       if (!token) return
 
-      // A queued advance from a figure pause must not fire after this one.
       if (timerRef.current) clearTimeout(timerRef.current)
       summaryRef.current = false
 

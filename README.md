@@ -1,10 +1,10 @@
 # WayTutor
 
-A Chrome extension that reads study material aloud, passage by passage, and
-produces a spoken summary grounded in that material.
+WayTutor is a Chrome extension that reads study material aloud, passage by
+passage, and produces a spoken summary grounded in that material.
 
-- `apps/extension` — WXT, side panel, content script, offscreen audio
-- `apps/api` — Go service on Fly.io, PostgreSQL on Neon, models through Vercel AI
+- `apps/extension`: WXT, side panel, content script, audio in the panel
+- `apps/api`: Go service on Fly.io, PostgreSQL on Neon, models through Vercel AI
   Gateway
 
 ## Requirements
@@ -16,14 +16,15 @@ produces a spoken summary grounded in that material.
 
 ## Run
 
-The whole stack — database, migrations, api on `:8080`:
+`make up` starts the whole stack: the database, the migrations and the api on
+`:8080`.
 
 ```sh
 make up
 make down
 ```
 
-Just the api, against the compose database:
+To run only the api against the compose database:
 
 ```sh
 docker compose up -d db
@@ -32,14 +33,14 @@ make migrate
 make dev
 ```
 
-The extension:
+To run the extension:
 
 ```sh
 cd apps/extension && npm install && npm run dev
 ```
 
 Load `apps/extension/.output/chrome-mv3` as an unpacked extension. The panel
-talks to `WXT_API_URL`, which defaults to `http://localhost:8080`; set it in
+talks to `WXT_API_URL`, which defaults to `http://localhost:8080`. Set it in
 `apps/extension/.env` for a production build.
 
 For an external database, point `DATABASE_URL` at Neon with `sslmode=require`.
@@ -58,8 +59,8 @@ https://waytutor-api.marcio.run/auth/google/callback
 Then fill `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OAUTH_STATE_SECRET` (16
 characters or more) and `BASE_URL` in `apps/api/.env`.
 
-New accounts are created with `status = 'pending'` and cannot use the API until
-approved:
+The API creates new accounts with `status = 'pending'`. They cannot use the API
+until approved:
 
 ```sh
 psql "$DATABASE_URL" -c "UPDATE accounts SET status = 'active', updated_at = now() WHERE email = 'someone@example.com'"
@@ -69,10 +70,10 @@ psql "$DATABASE_URL" -c "UPDATE accounts SET status = 'active', updated_at = now
 
 | Method | Path | Auth |
 | --- | --- | --- |
-| GET | `/healthz` | — |
-| GET | `/auth/google?redirect_uri=` | — |
-| GET | `/auth/google/callback` | — |
-| POST | `/v1/auth/exchange` | — |
+| GET | `/healthz` | none |
+| GET | `/auth/google?redirect_uri=` | none |
+| GET | `/auth/google/callback` | none |
+| POST | `/v1/auth/exchange` | none |
 | POST | `/v1/auth/logout` | bearer |
 | GET | `/v1/me` | bearer |
 | POST | `/v1/tts` | bearer |
@@ -89,14 +90,14 @@ bytes. The same text, voice and instructions always hit the same cache object,
 and a cache hit does not consume quota.
 
 `POST /v1/summary` takes `{"text": "<the whole Material>"}` and returns
-`{"summary": "..."}`. It is not cached on the server: every call is a model call
+`{"summary": "..."}`. The server does not cache it. Every call is a model call
 and consumes one of the monthly summaries.
 
 ## Audio cache
 
-Without `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
-the server caches audio in `CACHE_DIR`. Production sets all four and the machine
-becomes stateless.
+Without `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID` and
+`R2_SECRET_ACCESS_KEY`, the server caches audio in `CACHE_DIR`. Production sets
+all four and the machine becomes stateless.
 
 ## Check
 

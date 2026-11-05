@@ -1,15 +1,15 @@
 # WayTutor
 
-A browser extension that reads the student portal content aloud, with correct
-pronunciation of terms and acronyms, pauses to look at figures and a spoken
-summary at the end.
+WayTutor is a browser extension that reads the student portal content aloud. It
+pronounces terms and acronyms correctly, pauses so the listener can look at
+figures, and ends with a spoken summary.
 
 ## Terms
 
 | Term | Definition | Code name | Avoid |
 | --- | --- | --- | --- |
 | **Topic** | A unit of content in the portal, opened through the sequence viewer. It may hold a Material, a quiz, a PDF or a video. | `Topic` | page, lesson, activity |
-| **Material** | The textual content extracted from a Topic — headings, paragraphs, lists, tables and figures — that can be read aloud. | `Material` | document, article, PDF |
+| **Material** | The textual content that can be read aloud, extracted from a Topic: headings, paragraphs, lists, tables and figures. | `Material` | document, article, PDF |
 | **Passage** | The smallest continuous speakable unit of a Material, usually one paragraph or one list item. | `Passage` | chunk, block, snippet |
 | **Figure** | An image inside the Material. Its caption and credits are not part of the Reading. | `Figure` | picture, graph |
 | **Noise** | A Passage that exists in the Material but is not read: figure captions, source credits, stray URLs, image file names, bibliography and institutional boilerplate. | `Noise` | junk, irrelevant content |

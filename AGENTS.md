@@ -18,33 +18,33 @@ a bug.
 ```
 apps/api/         Go service, deployed on Fly.io
 apps/extension/   Chrome extension, built by WXT
-docs/adr/         decisions worth remembering
+docs/adr/         architecture decision records
 ```
 
 The repository root holds orchestration only: `Makefile`, docs, glossary.
-`apps/bot` and `apps/site` are planned; they are created when they have a job.
+`apps/bot` and `apps/site` are planned. Create them when they have a job.
 
 ## The bar
 
-Review criteria, not suggestions.
+These are review criteria, not suggestions.
 
-- A comment explains a why the code cannot show. Never what the code does.
+- A comment explains a why the code cannot show and never what the code does.
 - No `pkg/`, no barrel files, no `index.ts`, no `utils.ts`.
 - No abstraction with one implementation. The exceptions are real boundaries:
   speech provider, audio cache, database.
 - A file over 200 lines is two responsibilities in one file.
 - No configuration for something that never varies. The voice list is a
   catalogue, so it lives in code.
-- `ui/` never imports `chrome`, `fetch`, `zod` or `react-hook-form`. That is
-  `hooks/`.
-- Tests cover rules: extraction, reading state, quota, auth, cache. Nothing else.
-- An ADR only when the decision is hard to reverse, surprising without context,
-  and the result of a real trade-off.
+- `ui/` never imports `chrome`, `fetch`, `zod` or `react-hook-form`. That
+  belongs in `hooks/`.
+- Tests cover extraction, reading state, quota, auth and cache only.
+- Write an ADR only when a decision is hard to reverse, surprising without
+  context, and the result of a real trade-off.
 
 ## Go
 
 - Standard library first: `net/http` with ServeMux patterns. No framework, no ORM.
-- Everything lives in `internal/`, binaries in `cmd/<name>/main.go`.
+- Everything lives in `internal/`, and binaries live in `cmd/<name>/main.go`.
 - `main` wires and returns; `os.Exit` appears only in `main`.
 - Logging is `log/slog`, global. Call sites use `slog.Info` and `slog.Error`.
 - Config uses struct tags (`env`, `envDefault`, `validate`). A value enters the
@@ -74,7 +74,7 @@ Review criteria, not suggestions.
 - Validate at the boundary: `chrome.storage`, messages and API responses use the
   zod schema of the owning module.
 - The service worker registers the side panel behaviour and holds no state.
-- The offscreen document fetches and plays audio. Nothing sends base64.
+- The panel fetches the audio and plays it. Nothing travels as base64.
 - Colours and spacing come from Tailwind tokens in `style.css`.
 
 ## Before you commit

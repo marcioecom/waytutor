@@ -1,4 +1,5 @@
 import { Button } from '@/components/button'
+import { Spinner } from '@/components/spinner'
 import { useAccount } from '@/modules/account/hooks/use-account'
 import { messageFor } from '@/modules/account/messages'
 import { BlockedView } from '@/modules/account/ui/blocked-view'
@@ -23,7 +24,12 @@ export function App() {
 
 function Screen({ account }: { account: ReturnType<typeof useAccount> }) {
   if (account.isPending) {
-    return <p className="text-sm text-ink-faint">Carregando…</p>
+    return (
+      <p className="flex h-5 items-center gap-2 text-sm text-ink-faint">
+        <Spinner />
+        Carregando…
+      </p>
+    )
   }
 
   if (account.isError) {

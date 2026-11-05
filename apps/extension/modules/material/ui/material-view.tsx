@@ -1,4 +1,5 @@
 import { Button } from '@/components/button'
+import { Spinner } from '@/components/spinner'
 import { useScan } from '../hooks/use-scan'
 
 type Props = {
@@ -11,7 +12,12 @@ export function MaterialView({ currentIndex, onSelect, onSummary }: Props) {
   const scan = useScan()
 
   if (scan.isPending) {
-    return <p className="text-sm text-ink-faint">Lendo a página…</p>
+    return (
+      <p className="flex h-5 items-center gap-2 text-sm text-ink-faint">
+        <Spinner />
+        Lendo a página…
+      </p>
+    )
   }
 
   if (scan.isError) {
@@ -55,7 +61,7 @@ export function MaterialView({ currentIndex, onSelect, onSummary }: Props) {
         </p>
       </div>
 
-      <ol className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
+      <ol className="flex min-h-0 flex-1 animate-fade-in flex-col gap-2 overflow-y-auto pr-1 motion-reduce:animate-none">
         {material.passages.map((passage, index) => (
           <li key={index}>
             <button
@@ -64,7 +70,7 @@ export function MaterialView({ currentIndex, onSelect, onSummary }: Props) {
               aria-current={index === currentIndex || undefined}
               className={`flex w-full gap-2 rounded-sm border-l-2 py-1 pl-2 text-left text-sm leading-relaxed transition ${
                 index === currentIndex
-                  ? 'border-lamp text-ink'
+                  ? 'animate-pulse-soft border-lamp text-ink motion-reduce:animate-none'
                   : 'border-transparent text-ink-muted hover:border-line-2 hover:text-ink'
               }`}
             >
@@ -85,10 +91,11 @@ export function MaterialView({ currentIndex, onSelect, onSummary }: Props) {
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          className="px-0 py-1"
+          className="inline-flex items-center gap-2 px-0 py-1"
           onClick={() => scan.refetch()}
           disabled={scan.isFetching}
         >
+          {scan.isFetching ? <Spinner /> : null}
           {scan.isFetching ? 'Escaneando…' : 'Escanear de novo'}
         </Button>
 

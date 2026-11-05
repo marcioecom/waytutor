@@ -24,6 +24,25 @@
 
   --radius-sm: 6px;
   --radius-md: 10px;
+
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-pulse-soft: pulse-soft 2.8s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      border-left-color: var(--color-lamp);
+    }
+    50% {
+      border-left-color: var(--color-lamp-bright);
+    }
+  }
 }
 
 :root {

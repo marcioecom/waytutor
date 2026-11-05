@@ -1,6 +1,7 @@
 import { messageFor } from '../messages'
 import { useLogin } from '../hooks/use-account'
 import { Button } from '@/components/button'
+import { Spinner } from '@/components/spinner'
 
 export function LoginView() {
   const login = useLogin()
@@ -12,7 +13,12 @@ export function LoginView() {
         do que foi lido.
       </p>
 
-      <Button onClick={() => login.mutate()} disabled={login.isPending}>
+      <Button
+        className="inline-flex items-center justify-center gap-2"
+        onClick={() => login.mutate()}
+        disabled={login.isPending}
+      >
+        {login.isPending ? <Spinner /> : null}
         {login.isPending ? 'Abrindo o Google…' : 'Entrar com Google'}
       </Button>
 
