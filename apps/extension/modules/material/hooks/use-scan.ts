@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { displayTitle, scanTab } from '../scan'
+import { materialId } from '../id'
 
 export function useScan() {
   return useQuery({
@@ -13,6 +14,7 @@ export function useScan() {
 
       return {
         ...result,
+        id: await materialId(result.material.passages),
         material: { ...result.material, title: displayTitle(tab.title, result.material.title) },
       }
     },

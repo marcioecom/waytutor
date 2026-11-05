@@ -1,19 +1,24 @@
-import { MaterialView } from '@/modules/material/ui/material-view'
-import type { Passage } from '@/modules/material/material'
+import type { Workspace } from '@/modules/account/api'
 import { useScan } from '@/modules/material/hooks/use-scan'
+import { MaterialView } from '@/modules/material/ui/material-view'
+import { usePreferences } from '@/modules/preferences/hooks/use-preferences'
+import { PreferencesBar } from '@/modules/preferences/ui/preferences-bar'
 import { useReading } from '../hooks/use-reading'
 import { PlayerBar } from './player-bar'
 
-const noPassages: Passage[] = []
-
-export function ReadingView() {
+export function ReadingView({ workspace }: { workspace: Workspace }) {
   const scan = useScan()
-  const passages = scan.data?.material.passages ?? noPassages
+  const { preferences, update } = usePreferences()
+
+  const material = scan.data?.material ?? null
 
   const reading = useReading({
     tabId: scan.data?.tabId ?? -1,
     frameId: scan.data?.frameId ?? -1,
-    passages,
+    materialId: scan.data?.id ?? null,
+    material,
+    preferences,
+    defaultVoice: workspace.defaultVoice,
   })
 
   return (
@@ -23,12 +28,14 @@ export function ReadingView() {
       <PlayerBar
         status={reading.status}
         index={reading.index}
-        total={passages.length}
+        total={material?.passages.length ?? 0}
         errorCode={reading.errorCode}
         onToggle={reading.toggle}
         onPrevious={reading.previous}
         onNext={reading.next}
       />
+
+      <PreferencesBar voices={workspace.voices} preferences={preferences} onChange={update} />
     </div>
   )
 }

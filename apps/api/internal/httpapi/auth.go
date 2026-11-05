@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/marciojunior/waytutor/apps/api/internal/auth"
+	"github.com/marciojunior/waytutor/apps/api/internal/speech"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
 )
 
@@ -31,7 +32,9 @@ type accountBody struct {
 }
 
 type accountEnvelope struct {
-	Account accountBody `json:"account"`
+	Account      accountBody `json:"account"`
+	Voices       []string    `json:"voices"`
+	DefaultVoice string      `json:"defaultVoice"`
 }
 
 type exchangeResponse struct {
@@ -145,7 +148,11 @@ func (h *api) logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *api) me(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, accountEnvelope{Account: newAccountBody(accountFrom(r.Context()))})
+	writeJSON(w, http.StatusOK, accountEnvelope{
+		Account:      newAccountBody(accountFrom(r.Context())),
+		Voices:       speech.Voices(),
+		DefaultVoice: speech.DefaultVoice,
+	})
 }
 
 func (h *api) authenticated(next http.HandlerFunc) http.HandlerFunc {

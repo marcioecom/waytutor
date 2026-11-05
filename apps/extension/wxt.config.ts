@@ -8,7 +8,7 @@ export default defineConfig({
     name: 'WayTutor',
     description: 'Lê em voz alta o material do portal e resume o que foi lido.',
     action: { default_title: 'WayTutor' },
-    permissions: ['storage', 'sidePanel', 'identity', 'webNavigation', 'offscreen'],
+    permissions: ['storage', 'sidePanel', 'identity', 'webNavigation'],
     host_permissions: [
       'https://ava.catolica.edu.br/*',
       'https://conteudo.catolica.edu.br/*',

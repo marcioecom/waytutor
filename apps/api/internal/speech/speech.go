@@ -50,6 +50,10 @@ func ValidVoice(voice string) bool {
 	return false
 }
 
+func Voices() []string {
+	return append([]string(nil), voices...)
+}
+
 type Synthesizer struct {
 	apiKey  string
 	baseURL string

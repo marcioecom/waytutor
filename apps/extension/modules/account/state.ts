@@ -1,19 +1,19 @@
 import { ApiError } from '@/modules/api/errors'
-import { fetchAccount, type Account } from './api'
+import { fetchWorkspace, type Workspace } from './api'
 import { clearToken, readToken } from './storage'
 
 export type AccountState =
   | { kind: 'anonymous' }
   | { kind: 'pending' }
   | { kind: 'paused' }
-  | { kind: 'active'; account: Account }
+  | { kind: 'active'; workspace: Workspace }
 
 export async function loadAccountState(): Promise<AccountState> {
   const token = await readToken()
   if (!token) return { kind: 'anonymous' }
 
   try {
-    return { kind: 'active', account: await fetchAccount(token) }
+    return { kind: 'active', workspace: await fetchWorkspace(token) }
   } catch (error) {
     if (!(error instanceof ApiError)) throw error
 

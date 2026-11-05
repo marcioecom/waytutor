@@ -60,8 +60,8 @@ function Screen({ account }: { account: ReturnType<typeof useAccount> }) {
     case 'active':
       return (
         <div className="flex min-h-0 flex-1 flex-col gap-4">
-          <ReadingView />
-          <SessionFooter account={account.data.account} />
+          <ReadingView workspace={account.data.workspace} />
+          <SessionFooter account={account.data.workspace.account} />
         </div>
       )
   }
