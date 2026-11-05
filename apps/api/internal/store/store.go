@@ -17,9 +17,6 @@ func Open(ctx context.Context, databaseURL string) (*Store, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse database url: %w", err)
 	}
-	// The pooler in front of Neon runs PgBouncer in transaction mode, which hands
-	// a connection to another client between statements, so cached prepared
-	// statements collide across them.
 	cfg.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
 
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)

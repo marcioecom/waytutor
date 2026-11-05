@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log/slog"
 	"os"
@@ -31,23 +30,11 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("parse database url: %w", err)
 	}
-	// The pooler in front of Neon runs PgBouncer in transaction mode, which hands
-	// a connection to another client between statements, so cached prepared
-	// statements collide across them.
 	cfg.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
 
 	db := stdlib.OpenDB(*cfg)
 	defer db.Close()
 
-	if err := apply(db); err != nil {
-		return err
-	}
-
-	slog.Info("migrations applied")
-	return nil
-}
-
-func apply(db *sql.DB) error {
 	goose.SetBaseFS(migrations.FS)
 	if err := goose.SetDialect("postgres"); err != nil {
 		return fmt.Errorf("set goose dialect: %w", err)
@@ -55,5 +42,7 @@ func apply(db *sql.DB) error {
 	if err := goose.Up(db, "."); err != nil {
 		return fmt.Errorf("apply migrations: %w", err)
 	}
+
+	slog.Info("migrations applied")
 	return nil
 }
