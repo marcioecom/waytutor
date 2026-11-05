@@ -150,3 +150,11 @@ func TestSummarizeRejectsAnEmptyAnswer(t *testing.T) {
 		}
 	}
 }
+
+func TestSummarizeRejectsATruncatedAnswer(t *testing.T) {
+	body := `{"choices":[{"message":{"content":"Primeiro, na seção de introdução e modelos de dados, vemos"},"finish_reason":"length"}]}`
+
+	if _, err := clientFor(t, http.StatusOK, body).Summarize(context.Background(), "material"); !errors.Is(err, ErrUpstream) {
+		t.Fatalf("Summarize() error = %v, want ErrUpstream", err)
+	}
+}

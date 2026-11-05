@@ -8,7 +8,11 @@ import (
 )
 
 const (
-	SummaryModel = "google/gemini-3.8-flash"
+	SummaryModel = "openai/gpt-6-luna"
+
+	// The model reasons before answering, and reasoning tokens count against the
+	// budget. A summary of 2 to 4 spoken minutes costs ~880 tokens.
+	summaryMaxTokens = 2000
 
 	summaryPrompt = `Você é um professor didático de curso superior. Resuma o MATERIAL para revisão em áudio, em português do Brasil.
 
@@ -26,7 +30,7 @@ func (c *Client) Summarize(ctx context.Context, material string) (string, error)
 	body, err := c.post(ctx, "/v1/chat/completions", map[string]any{
 		"model":       SummaryModel,
 		"temperature": 0.2,
-		"max_tokens":  1400,
+		"max_tokens":  summaryMaxTokens,
 		"messages": []map[string]string{
 			{"role": "system", "content": summaryPrompt},
 			{"role": "user", "content": "MATERIAL:\n\n" + material},
@@ -41,6 +45,7 @@ func (c *Client) Summarize(ctx context.Context, material string) (string, error)
 			Message struct {
 				Content string `json:"content"`
 			} `json:"message"`
+			FinishReason string `json:"finish_reason"`
 		} `json:"choices"`
 	}
 	if err := json.Unmarshal(body, &payload); err != nil {
@@ -50,7 +55,13 @@ func (c *Client) Summarize(ctx context.Context, material string) (string, error)
 		return "", fmt.Errorf("%w: response carries no summary", ErrUpstream)
 	}
 
-	summary := strings.TrimSpace(payload.Choices[0].Message.Content)
+	choice := payload.Choices[0]
+	// A cut summary reads like a broken one, so it is a failure, not a result.
+	if strings.EqualFold(choice.FinishReason, "length") {
+		return "", fmt.Errorf("%w: summary hit the token budget", ErrUpstream)
+	}
+
+	summary := strings.TrimSpace(choice.Message.Content)
 	if summary == "" {
 		return "", fmt.Errorf("%w: response carries no summary", ErrUpstream)
 	}
