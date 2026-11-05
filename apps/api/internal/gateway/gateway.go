@@ -42,7 +42,7 @@ func New(apiKey, baseURL string) *Client {
 }
 
 // The caller owns the deadline, because speech and summary time out differently.
-func (c *Client) post(ctx context.Context, path string, payload any) ([]byte, error) {
+func (c *Client) post(ctx context.Context, path string, payload any, headers map[string]string) ([]byte, error) {
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return nil, fmt.Errorf("encode request: %w", err)
@@ -54,6 +54,9 @@ func (c *Client) post(ctx context.Context, path string, payload any) ([]byte, er
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+	for name, value := range headers {
+		req.Header.Set(name, value)
+	}
 
 	res, err := c.http.Do(req)
 	if err != nil {

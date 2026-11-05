@@ -82,6 +82,30 @@ func TestSpeakRejectsAnEmptyResponse(t *testing.T) {
 	}
 }
 
+func TestSpeakSendsTheSpeechProtocolHeaders(t *testing.T) {
+	var received http.Header
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		received = r.Header.Clone()
+		_, _ = w.Write([]byte(`{"audio":"` + base64.StdEncoding.EncodeToString(wavBytes()) + `"}`))
+	}))
+	t.Cleanup(server.Close)
+
+	if _, err := New("key", server.URL).Speak(context.Background(), "texto", DefaultVoice); err != nil {
+		t.Fatalf("Speak() error = %v", err)
+	}
+
+	// The gateway rejects the request with 400 without these three.
+	for name, want := range map[string]string{
+		"ai-gateway-protocol-version":           "0.0.1",
+		"ai-speech-model-specification-version": "4",
+		"ai-model-id":                           SpeechModel,
+	} {
+		if got := received.Get(name); got != want {
+			t.Errorf("header %s = %q, want %q", name, got, want)
+		}
+	}
+}
+
 func TestSpeechCacheKeyDependsOnVoiceAndText(t *testing.T) {
 	base := SpeechCacheKey(DefaultVoice, "texto")
 	if base != SpeechCacheKey(DefaultVoice, "texto") {

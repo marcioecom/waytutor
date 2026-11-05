@@ -31,7 +31,7 @@ func (c *Client) Summarize(ctx context.Context, material string) (string, error)
 			{"role": "system", "content": summaryPrompt},
 			{"role": "user", "content": "MATERIAL:\n\n" + material},
 		},
-	})
+	}, nil)
 	if err != nil {
 		return "", err
 	}

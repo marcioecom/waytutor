@@ -55,6 +55,10 @@ func (c *Client) Speak(ctx context.Context, text, voice string) ([]byte, error) 
 		"voice":        voice,
 		"outputFormat": outputFormat,
 		"instructions": speechInstructions,
+	}, map[string]string{
+		"ai-gateway-protocol-version":           "0.0.1",
+		"ai-speech-model-specification-version": "4",
+		"ai-model-id":                           SpeechModel,
 	})
 	if err != nil {
 		return nil, err
