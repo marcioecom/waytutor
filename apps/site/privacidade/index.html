@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Política de privacidade do WayTutor</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main>
+      <header class="site">
+        <a href="/">WayTutor</a>
+      </header>
+
+      <h1>Política de privacidade</h1>
+      <p class="meta">Versão 1, 5 de novembro de 2026.</p>
+
+      <p>
+        O WayTutor é uma extensão para o Chrome que lê em voz alta o material do portal acadêmico
+        e gera um resumo falado desse material. Esta página descreve quais dados o serviço trata,
+        para quê, por quanto tempo e com quem são compartilhados.
+      </p>
+
+      <h2>Quem é o responsável</h2>
+      <p>
+        O WayTutor é operado por Márcio Júnior, projeto da Waypoint Labs. O contato para qualquer
+        assunto desta política, inclusive pedidos de exclusão, é
+        <a href="mailto:privacidade@marcio.run">privacidade@marcio.run</a>.
+      </p>
+
+      <h2>Quais dados tratamos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Dado</th>
+            <th>Para quê</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Identificador da conta Google, e-mail, nome e endereço da foto de perfil</td>
+            <td>Identificar quem está usando e liberar o acesso. A foto não é exibida em lugar nenhum hoje.</td>
+          </tr>
+          <tr>
+            <td>Texto dos trechos do material, durante a leitura</td>
+            <td>Gerar o áudio e o resumo. É o conteúdo que a extensão enviou da página aberta.</td>
+          </tr>
+          <tr>
+            <td>Áudio gerado</td>
+            <td>Ser reproduzido e reaproveitado quando outra pessoa lê o mesmo trecho.</td>
+          </tr>
+          <tr>
+            <td>Contadores de uso: caracteres sintetizados e resumos por mês</td>
+            <td>Aplicar o limite mensal e estimar o custo do serviço.</td>
+          </tr>
+          <tr>
+            <td>Registro de acesso: data de criação e de última utilização da sessão, identificador do navegador</td>
+            <td>Manter o login por até 7 dias e permitir revogar o acesso.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        O texto do material não é guardado como texto. O que permanece é o áudio gerado a partir
+        dele e os contadores. A senha da sua conta Google nunca passa por nós: o login acontece no
+        próprio Google.
+      </p>
+
+      <h2>O que guardamos no seu navegador</h2>
+      <p>
+        A extensão guarda no armazenamento local do Chrome o token de acesso, suas preferências
+        (voz, velocidade e pausa em figura) e a posição de leitura de cada material. Não usamos
+        cookies, não rastreamos navegação e não lemos páginas fora dos endereços do portal.
+      </p>
+
+      <h2>Com quem compartilhamos</h2>
+      <ul>
+        <li><strong>Google</strong>, para autenticar sua conta e para converter texto em voz.</li>
+        <li>
+          <strong>Vercel AI Gateway</strong>, que encaminha o texto aos provedores de modelo usados:
+          Google, para a voz, e OpenAI, para o resumo. Esses provedores processam o texto para
+          devolver o áudio ou o resumo.
+        </li>
+        <li><strong>Cloudflare</strong>, que guarda os arquivos de áudio.</li>
+        <li><strong>Fly.io</strong>, que hospeda o servidor, e <strong>Neon</strong>, que hospeda o banco de dados.</li>
+      </ul>
+      <p>
+        Não vendemos dados, não usamos seus dados para publicidade e não os compartilhamos com
+        terceiros para finalidades próprias deles. O uso de dados obtidos pelas APIs do Google
+        segue a Política de Dados do Usuário dos Serviços de API do Google, incluindo os requisitos
+        de Uso Limitado.
+      </p>
+
+      <h2>Transferência para fora do Brasil</h2>
+      <p>
+        Os fornecedores acima processam dados em outros países, principalmente nos Estados Unidos.
+        A transferência acontece para executar o serviço que você pediu, conforme o artigo 33 da
+        LGPD.
+      </p>
+
+      <h2>Por quanto tempo guardamos</h2>
+      <ul>
+        <li>Conta e contadores: enquanto a conta existir.</li>
+        <li>Sessão de acesso: 7 dias, renovados a cada uso, e encerrados no logout.</li>
+        <li>Código de login: 2 minutos, de uso único.</li>
+        <li>
+          Áudio: por tempo indeterminado. O arquivo é identificado por um código calculado a partir
+          do texto, da voz e do modelo, não por conta, então o cache não registra quem ouviu o quê.
+        </li>
+      </ul>
+
+      <h2>Seus direitos</h2>
+      <p>
+        Você pode pedir confirmação de tratamento, acesso, correção, anonimização, portabilidade,
+        eliminação dos dados e revogação do consentimento. Basta escrever para
+        <a href="mailto:privacidade@marcio.run">privacidade@marcio.run</a>. Respondemos em até 15
+        dias. Excluir a conta remove o acesso, as sessões e os contadores; o áudio já gerado
+        permanece no cache, porque não é possível ligá-lo a uma pessoa.
+      </p>
+
+      <h2>Segurança</h2>
+      <p>
+        Todo o tráfego usa HTTPS. O token de acesso é guardado no servidor apenas como hash, e a
+        liberação de cada conta é manual. O acesso pode ser pausado ou revogado a qualquer momento.
+      </p>
+
+      <h2>Crianças e adolescentes</h2>
+      <p>
+        O serviço é destinado a estudantes de ensino superior e não é direcionado a menores de 18
+        anos.
+      </p>
+
+      <h2>Mudanças nesta política</h2>
+      <p>
+        Se o tratamento de dados mudar, esta página é atualizada e a data no topo muda junto.
+      </p>
+
+      <footer class="site">
+        <p class="links">
+          <a href="/">Início</a>
+          <a href="/privacy">English version</a>
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

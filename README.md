@@ -102,6 +102,16 @@ Without `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID` and
 `R2_SECRET_ACCESS_KEY`, the server caches audio in `CACHE_DIR`. Production sets
 all four and the machine becomes stateless.
 
+## Site
+
+`apps/site` holds plain HTML served by Cloudflare Pages at
+`https://waytutor.marcio.run`. There is no build step: `/`, `/privacidade` and
+`/privacy` are directories with an `index.html`.
+
+```sh
+npx wrangler pages deploy apps/site --project-name waytutor-site
+```
+
 ## Check
 
 ```sh

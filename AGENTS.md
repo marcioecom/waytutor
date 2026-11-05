@@ -18,11 +18,12 @@ a bug.
 ```
 apps/api/         Go service, deployed on Fly.io
 apps/extension/   Chrome extension, built by WXT
+apps/site/        static pages for waytutor.marcio.run
 docs/adr/         architecture decision records
 ```
 
 The repository root holds orchestration only: `Makefile`, docs, glossary.
-`apps/bot` and `apps/site` are planned. Create them when they have a job.
+`apps/bot` is planned. Create it when it has a job.
 
 ## The bar
 
@@ -40,6 +41,8 @@ These are review criteria, not suggestions.
 - Tests cover extraction, reading state, quota, auth and cache only.
 - Write an ADR only when a decision is hard to reverse, surprising without
   context, and the result of a real trade-off.
+- A change to what is stored, logged or sent to a third party updates
+  `apps/site/privacidade` in the same commit.
 
 ## Go
 
