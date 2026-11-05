@@ -105,12 +105,14 @@ all four and the machine becomes stateless.
 ## Site
 
 `apps/site` holds plain HTML served by Cloudflare Pages at
-`https://waytutor.marcio.run`. There is no build step: `index.html`,
-`privacidade.html` and `privacy.html` are served at `/`, `/privacidade` and
-`/privacy`.
+`https://waytutor.marcio.run`. There is no build step. Pages serves
+`/privacidade` and `/privacy` from the `.html` files, and those are the URLs to
+use in the store listing. The links inside the pages keep the `.html` extension
+so a plain static server can preview them.
 
 ```sh
 npx wrangler pages deploy apps/site --project-name waytutor-site
+python3 -m http.server 8000 --directory apps/site   # preview, then open :8000
 ```
 
 ## Check
