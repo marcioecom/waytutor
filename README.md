@@ -105,8 +105,9 @@ all four and the machine becomes stateless.
 ## Site
 
 `apps/site` holds plain HTML served by Cloudflare Pages at
-`https://waytutor.marcio.run`. There is no build step: `/`, `/privacidade` and
-`/privacy` are directories with an `index.html`.
+`https://waytutor.marcio.run`. There is no build step: `index.html`,
+`privacidade.html` and `privacy.html` are served at `/`, `/privacidade` and
+`/privacy`.
 
 ```sh
 npx wrangler pages deploy apps/site --project-name waytutor-site
