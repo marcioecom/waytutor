@@ -13,8 +13,8 @@ import (
 	"github.com/marciojunior/waytutor/apps/api/internal/auth"
 	"github.com/marciojunior/waytutor/apps/api/internal/cache"
 	"github.com/marciojunior/waytutor/apps/api/internal/config"
+	"github.com/marciojunior/waytutor/apps/api/internal/gateway"
 	"github.com/marciojunior/waytutor/apps/api/internal/httpapi"
-	"github.com/marciojunior/waytutor/apps/api/internal/speech"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
 )
 
@@ -59,10 +59,11 @@ func run() error {
 			Store:  db,
 			Auth:   authenticator,
 			Cache:  audioCache,
-			Speech: speech.New(cfg.GatewayAPIKey, speech.APIBaseURL),
+			Models: gateway.New(cfg.GatewayAPIKey, gateway.BaseURL),
 			Limits: httpapi.Limits{
 				MonthlyCharsPerAccount: cfg.MonthlyCharsPerAccount,
 				GlobalMonthlyChars:     cfg.GlobalMonthlyChars,
+				MonthlySummaries:       cfg.MonthlySummaries,
 				RatePerMinute:          cfg.RatePerMinute,
 			},
 		}),

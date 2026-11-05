@@ -35,6 +35,7 @@ type Config struct {
 
 	MonthlyCharsPerAccount int64 `env:"MONTHLY_CHARS_PER_ACCOUNT" envDefault:"500000" validate:"min=1"`
 	GlobalMonthlyChars     int64 `env:"GLOBAL_MONTHLY_CHARS" envDefault:"6000000" validate:"gtefield=MonthlyCharsPerAccount"`
+	MonthlySummaries       int64 `env:"MONTHLY_SUMMARIES_PER_ACCOUNT" envDefault:"200" validate:"min=1"`
 	RatePerMinute          int   `env:"RATE_PER_MINUTE" envDefault:"40" validate:"min=1"`
 }
 

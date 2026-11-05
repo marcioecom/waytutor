@@ -30,6 +30,7 @@ export function useReading({
 }: Props) {
   const [player] = useState(() => new AudioPlayer())
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const summaryRef = useRef(false)
   const [index, setIndex] = useState(0)
   const [status, setStatus] = useState<ReadingStatus>('idle')
   const [errorCode, setErrorCode] = useState<string | null>(null)
@@ -46,6 +47,7 @@ export function useReading({
 
       // A queued advance from a figure pause must not fire after this one.
       if (timerRef.current) clearTimeout(timerRef.current)
+      summaryRef.current = false
 
       setIndex(from)
       setErrorCode(null)
@@ -68,6 +70,35 @@ export function useReading({
     },
     [frameId, material, player, preferences.speed, tabId, voice],
   )
+
+  // The Summary is spoken by the same player, so the Reading has to know that
+  // finishing it must not advance to the next Passage.
+  const speak = useCallback(
+    async (text: string) => {
+      const token = await readToken()
+      if (!token) return
+
+      if (timerRef.current) clearTimeout(timerRef.current)
+      summaryRef.current = true
+
+      setErrorCode(null)
+      setStatus('loading')
+
+      try {
+        await player.play(-1, text, token, { rate: preferences.speed, voice })
+      } catch (error) {
+        setStatus('idle')
+        setErrorCode(error instanceof ApiError ? error.code : 'audio_failed')
+      }
+    },
+    [player, preferences.speed, voice],
+  )
+
+  const stop = useCallback(() => {
+    summaryRef.current = false
+    player.stop()
+    setStatus('idle')
+  }, [player])
 
   const advance = useCallback(
     (from: number) => {
@@ -93,7 +124,14 @@ export function useReading({
 
   useEffect(() => {
     player.onStarted = () => setStatus('playing')
-    player.onEnded = () => advance(index)
+    player.onEnded = () => {
+      if (summaryRef.current) {
+        summaryRef.current = false
+        setStatus('idle')
+        return
+      }
+      advance(index)
+    }
     player.onError = (code) => {
       setStatus('idle')
       setErrorCode(code)
@@ -159,6 +197,8 @@ export function useReading({
     errorCode,
     toggle,
     goTo,
+    speak,
+    stop,
     next: () => goTo(index + 1),
     previous: () => goTo(index - 1),
   }

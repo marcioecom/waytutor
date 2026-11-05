@@ -1,7 +1,6 @@
 import { z } from 'zod'
+import { apiUrl } from '@/modules/api/config'
 import { ApiError, codeOf } from '@/modules/api/errors'
-
-const apiBaseUrl = import.meta.env.WXT_API_URL ?? 'http://localhost:8080'
 
 const accountSchema = z.object({
   id: z.string(),
@@ -18,10 +17,6 @@ const workspaceSchema = z.object({
 
 export type Account = z.infer<typeof accountSchema>
 export type Workspace = z.infer<typeof workspaceSchema>
-
-export function apiUrl(path: string): string {
-  return `${apiBaseUrl}${path}`
-}
 
 export async function exchangeLoginCode(code: string): Promise<{ token: string; account: Account }> {
   const response = await fetch(apiUrl('/v1/auth/exchange'), {

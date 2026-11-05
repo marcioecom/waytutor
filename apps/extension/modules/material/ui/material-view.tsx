@@ -4,9 +4,10 @@ import { useScan } from '../hooks/use-scan'
 type Props = {
   currentIndex: number
   onSelect: (index: number) => void
+  onSummary: () => void
 }
 
-export function MaterialView({ currentIndex, onSelect }: Props) {
+export function MaterialView({ currentIndex, onSelect, onSummary }: Props) {
   const scan = useScan()
 
   if (scan.isPending) {
@@ -81,14 +82,20 @@ export function MaterialView({ currentIndex, onSelect }: Props) {
         ))}
       </ol>
 
-      <Button
-        variant="ghost"
-        className="self-start px-0 py-1"
-        onClick={() => scan.refetch()}
-        disabled={scan.isFetching}
-      >
-        {scan.isFetching ? 'Escaneando…' : 'Escanear de novo'}
-      </Button>
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          className="px-0 py-1"
+          onClick={() => scan.refetch()}
+          disabled={scan.isFetching}
+        >
+          {scan.isFetching ? 'Escaneando…' : 'Escanear de novo'}
+        </Button>
+
+        <Button variant="ghost" className="px-0 py-1" onClick={onSummary}>
+          Resumo
+        </Button>
+      </div>
     </div>
   )
 }

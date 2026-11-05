@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import { Button } from '@/components/button'
 import { useAccount } from '@/modules/account/hooks/use-account'
 import { messageFor } from '@/modules/account/messages'

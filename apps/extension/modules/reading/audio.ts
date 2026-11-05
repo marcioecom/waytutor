@@ -1,6 +1,6 @@
 import { ApiError, codeOf } from '@/modules/api/errors'
+import { apiUrl } from '@/modules/api/config'
 
-const apiBaseUrl = import.meta.env.WXT_API_URL ?? 'http://localhost:8080'
 const maxBuffered = 3
 
 type PlayOptions = {
@@ -80,7 +80,7 @@ export class AudioPlayer {
   }
 
   private async fetchAudio(text: string, token: string, voice: string): Promise<string> {
-    const response = await fetch(`${apiBaseUrl}/v1/tts`, {
+    const response = await fetch(apiUrl('/v1/tts'), {
       method: 'POST',
       headers: {
         'content-type': 'application/json',

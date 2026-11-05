@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/marciojunior/waytutor/apps/api/internal/auth"
-	"github.com/marciojunior/waytutor/apps/api/internal/speech"
+	"github.com/marciojunior/waytutor/apps/api/internal/gateway"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
 )
 
@@ -150,8 +150,8 @@ func (h *api) logout(w http.ResponseWriter, r *http.Request) {
 func (h *api) me(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, accountEnvelope{
 		Account:      newAccountBody(accountFrom(r.Context())),
-		Voices:       speech.Voices(),
-		DefaultVoice: speech.DefaultVoice,
+		Voices:       gateway.Voices(),
+		DefaultVoice: gateway.DefaultVoice,
 	})
 }
 

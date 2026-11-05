@@ -76,6 +76,7 @@ psql "$DATABASE_URL" -c "UPDATE accounts SET status = 'active', updated_at = now
 | POST | `/v1/auth/logout` | bearer |
 | GET | `/v1/me` | bearer |
 | POST | `/v1/tts` | bearer |
+| POST | `/v1/summary` | bearer |
 
 Errors are `{"error":{"code":"..."}}` with an English code: `invalid_request`,
 `invalid_redirect_uri`, `invalid_state`, `invalid_code`, `oauth_failed`,
@@ -86,6 +87,10 @@ Errors are `{"error":{"code":"..."}}` with an English code: `invalid_request`,
 `POST /v1/tts` takes `{"text": "...", "voice": "Kore"}` and returns the WAV
 bytes. The same text, voice and instructions always hit the same cache object,
 and a cache hit does not consume quota.
+
+`POST /v1/summary` takes `{"text": "<the whole Material>"}` and returns
+`{"summary": "..."}`. It is not cached on the server: every call is a model call
+and consumes one of the monthly summaries.
 
 ## Audio cache
 

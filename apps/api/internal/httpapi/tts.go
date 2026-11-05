@@ -12,8 +12,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/marciojunior/waytutor/apps/api/internal/cache"
+	"github.com/marciojunior/waytutor/apps/api/internal/gateway"
 	"github.com/marciojunior/waytutor/apps/api/internal/quota"
-	"github.com/marciojunior/waytutor/apps/api/internal/speech"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
 )
 
@@ -56,14 +56,14 @@ func (h *api) tts(w http.ResponseWriter, r *http.Request) {
 
 	voice := strings.TrimSpace(body.Voice)
 	if voice == "" {
-		voice = speech.DefaultVoice
+		voice = gateway.DefaultVoice
 	}
-	if !speech.ValidVoice(voice) {
+	if !gateway.ValidVoice(voice) {
 		writeError(w, http.StatusBadRequest, "unknown_voice")
 		return
 	}
 
-	key := speech.CacheKey(voice, text)
+	key := gateway.SpeechCacheKey(voice, text)
 
 	audio, err := h.cache.Get(r.Context(), key)
 	if err == nil {
@@ -87,10 +87,10 @@ func (h *api) tts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// A client that hangs up must not cancel audio that was already reserved.
-	ctx, cancel := context.WithTimeout(context.WithoutCancel(r.Context()), speech.RequestTimeout)
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(r.Context()), gateway.SpeechTimeout)
 	defer cancel()
 
-	audio, err = h.speech.Speak(ctx, text, voice)
+	audio, err = h.models.Speak(ctx, text, voice)
 	if err != nil {
 		refundCtx, refundCancel := context.WithTimeout(context.WithoutCancel(r.Context()), 5*time.Second)
 		defer refundCancel()
@@ -99,10 +99,10 @@ func (h *api) tts(w http.ResponseWriter, r *http.Request) {
 		}
 
 		switch {
-		case errors.Is(err, speech.ErrAuth):
+		case errors.Is(err, gateway.ErrAuth):
 			slog.ErrorContext(r.Context(), "speech credentials rejected", "error", err)
 			writeError(w, http.StatusBadGateway, "provider_auth")
-		case errors.Is(err, speech.ErrQuota):
+		case errors.Is(err, gateway.ErrQuota):
 			writeError(w, http.StatusServiceUnavailable, "provider_quota")
 		default:
 			slog.ErrorContext(r.Context(), "speech failed", "error", err, "account_id", account.ID)

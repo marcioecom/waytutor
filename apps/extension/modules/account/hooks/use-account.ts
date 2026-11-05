@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '@/modules/api/errors'
-import { apiUrl, endSession, exchangeLoginCode } from '../api'
+import { apiUrl } from '@/modules/api/config'
+import { endSession, exchangeLoginCode } from '../api'
 import { loadAccountState, type AccountState } from '../state'
 import { clearToken, readToken, saveToken } from '../storage'
 

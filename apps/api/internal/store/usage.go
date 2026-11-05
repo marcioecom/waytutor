@@ -70,3 +70,32 @@ func (s *Store) RefundChars(ctx context.Context, accountID, period string, chars
 	}
 	return nil
 }
+
+func (s *Store) ReserveSummary(ctx context.Context, accountID, period string, limit int64) error {
+	const query = `
+		INSERT INTO usage (account_id, period, summaries) VALUES ($1, $2, 1)
+		ON CONFLICT (account_id, period) DO UPDATE
+		SET summaries = usage.summaries + 1
+		WHERE usage.summaries + 1 <= $3`
+
+	tag, err := s.pool.Exec(ctx, query, accountID, period, limit)
+	if err != nil {
+		return fmt.Errorf("reserve summary: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrQuotaExceeded
+	}
+	return nil
+}
+
+func (s *Store) RefundSummary(ctx context.Context, accountID, period string) error {
+	const query = `
+		UPDATE usage
+		SET summaries = GREATEST(summaries - 1, 0)
+		WHERE account_id = $1 AND period = $2`
+
+	if _, err := s.pool.Exec(ctx, query, accountID, period); err != nil {
+		return fmt.Errorf("refund summary: %w", err)
+	}
+	return nil
+}
