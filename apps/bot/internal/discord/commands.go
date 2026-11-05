@@ -26,10 +26,11 @@ func subcommand(name, description string, options ...*discordgo.ApplicationComma
 
 func emailOption() *discordgo.ApplicationCommandOption {
 	return &discordgo.ApplicationCommandOption{
-		Type:        discordgo.ApplicationCommandOptionString,
-		Name:        "email",
-		Description: "E-mail da conta",
-		Required:    true,
-		MaxLength:   200,
+		Type:         discordgo.ApplicationCommandOptionString,
+		Name:         "email",
+		Description:  "E-mail da conta",
+		Required:     true,
+		MaxLength:    200,
+		Autocomplete: true,
 	}
 }

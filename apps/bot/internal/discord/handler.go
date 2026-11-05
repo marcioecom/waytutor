@@ -32,6 +32,15 @@ func NewHandler(cfg config.Config, client *api.Client, logger *slog.Logger) *Han
 }
 
 func (h *Handler) OnInteraction(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
+	switch interaction.Type {
+	case discordgo.InteractionApplicationCommand:
+		h.handleCommand(session, interaction)
+	case discordgo.InteractionApplicationCommandAutocomplete:
+		h.handleAutocomplete(session, interaction)
+	}
+}
+
+func (h *Handler) handleCommand(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
 	data := interaction.ApplicationCommandData()
 	if data.Name != "tutor" || len(data.Options) == 0 {
 		return
@@ -185,4 +194,46 @@ func editResponse(session *discordgo.Session, interaction *discordgo.Interaction
 		return fmt.Errorf("edit response: %w", err)
 	}
 	return nil
+}
+
+func (h *Handler) handleAutocomplete(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
+	if !h.admins[userID(interaction)] {
+		h.respondAutocomplete(session, interaction, nil)
+		return
+	}
+
+	data := interaction.ApplicationCommandData()
+	if data.Name != "tutor" || len(data.Options) == 0 {
+		h.respondAutocomplete(session, interaction, nil)
+		return
+	}
+
+	subcommand := data.Options[0]
+
+	// Discord drops an autocomplete that takes longer than three seconds.
+	ctx, cancel := context.WithTimeout(context.Background(), 2500*time.Millisecond)
+	defer cancel()
+
+	accounts, err := h.api.List(ctx, autocompleteStatus(subcommand.Name), "")
+	if err != nil {
+		h.logger.Warn("autocomplete failed", "subcommand", subcommand.Name, "error", err)
+		h.respondAutocomplete(session, interaction, nil)
+		return
+	}
+
+	h.respondAutocomplete(session, interaction, emailChoices(accounts, optionValue(subcommand, "email")))
+}
+
+func (h *Handler) respondAutocomplete(
+	session *discordgo.Session,
+	interaction *discordgo.InteractionCreate,
+	choices []*discordgo.ApplicationCommandOptionChoice,
+) {
+	err := session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionApplicationCommandAutocompleteResult,
+		Data: &discordgo.InteractionResponseData{Choices: choices},
+	})
+	if err != nil {
+		h.logger.Warn("respond autocomplete failed", "error", err)
+	}
 }
