@@ -40,8 +40,9 @@ cd apps/extension && npm install && npm run dev
 ```
 
 Load `apps/extension/.output/chrome-mv3` as an unpacked extension. The panel
-talks to `WXT_API_URL`, which defaults to `http://localhost:8080`. Set it in
-`apps/extension/.env` for a production build.
+talks to `WXT_API_URL`. Development falls back to `http://localhost:8080`, and
+`npm run build` reads `apps/extension/.env.production`, which points at the
+deployed API.
 
 For an external database, point `DATABASE_URL` at Neon with `sslmode=require`.
 Keep the local Postgres major version in step with Neon's. Either Neon endpoint
