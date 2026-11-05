@@ -17,13 +17,13 @@ a bug.
 
 ```
 apps/api/         Go service, deployed on Fly.io
+apps/bot/         Go bot for Discord, approves accounts
 apps/extension/   Chrome extension, built by WXT
 apps/site/        static pages for waytutor.marcio.run
 docs/adr/         architecture decision records
 ```
 
 The repository root holds orchestration only: `Makefile`, docs, glossary.
-`apps/bot` is planned. Create it when it has a job.
 
 ## The bar
 

@@ -66,6 +66,7 @@ func run() error {
 				MonthlySummaries:       cfg.MonthlySummaries,
 				RatePerMinute:          cfg.RatePerMinute,
 			},
+			AdminToken: cfg.AdminToken,
 		}),
 		ReadHeaderTimeout: 5 * time.Second,
 	}

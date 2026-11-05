@@ -24,6 +24,7 @@ type Config struct {
 	OAuthStateSecret   string `env:"OAUTH_STATE_SECRET" validate:"required,min=16"`
 
 	GatewayAPIKey string `env:"AI_GATEWAY_API_KEY" validate:"required"`
+	AdminToken    string `env:"ADMIN_TOKEN"`
 
 	CacheDir string `env:"CACHE_DIR" envDefault:"./data/audio" validate:"required"`
 

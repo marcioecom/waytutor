@@ -30,30 +30,33 @@ type Limits struct {
 }
 
 type Deps struct {
-	Store  *store.Store
-	Auth   *auth.Authenticator
-	Cache  cache.Cache
-	Models *gateway.Client
-	Limits Limits
+	Store      *store.Store
+	Auth       *auth.Authenticator
+	Cache      cache.Cache
+	Models     *gateway.Client
+	Limits     Limits
+	AdminToken string
 }
 
 type api struct {
-	store   *store.Store
-	auth    *auth.Authenticator
-	cache   cache.Cache
-	models  *gateway.Client
-	limiter *ratelimit.Limiter
-	limits  Limits
+	store      *store.Store
+	auth       *auth.Authenticator
+	cache      cache.Cache
+	models     *gateway.Client
+	limiter    *ratelimit.Limiter
+	limits     Limits
+	adminToken string
 }
 
 func New(d Deps) http.Handler {
 	h := &api{
-		store:   d.Store,
-		auth:    d.Auth,
-		cache:   d.Cache,
-		models:  d.Models,
-		limiter: ratelimit.New(d.Limits.RatePerMinute),
-		limits:  d.Limits,
+		store:      d.Store,
+		auth:       d.Auth,
+		cache:      d.Cache,
+		models:     d.Models,
+		limiter:    ratelimit.New(d.Limits.RatePerMinute),
+		limits:     d.Limits,
+		adminToken: d.AdminToken,
 	}
 
 	mux := http.NewServeMux()
@@ -65,6 +68,13 @@ func New(d Deps) http.Handler {
 	mux.HandleFunc("GET /v1/me", h.authenticated(h.me))
 	mux.HandleFunc("POST /v1/tts", h.authenticated(h.tts))
 	mux.HandleFunc("POST /v1/summary", h.authenticated(h.summary))
+
+	// Without a token there is no admin surface at all.
+	if h.adminToken != "" {
+		mux.HandleFunc("GET /admin/accounts", h.admin(h.listAccounts))
+		mux.HandleFunc("POST /admin/accounts/{id}/status", h.admin(h.setAccountStatus))
+		mux.HandleFunc("DELETE /admin/accounts/{id}/sessions", h.admin(h.revokeSessions))
+	}
 
 	return requestLog(cors(recoverer(mux)))
 }

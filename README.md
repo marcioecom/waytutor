@@ -81,6 +81,12 @@ psql "$DATABASE_URL" -c "UPDATE accounts SET status = 'active', updated_at = now
 | GET | `/v1/me` | bearer |
 | POST | `/v1/tts` | bearer |
 | POST | `/v1/summary` | bearer |
+| GET | `/admin/accounts?status=&email=` | admin |
+| POST | `/admin/accounts/{id}/status` | admin |
+| DELETE | `/admin/accounts/{id}/sessions` | admin |
+
+The admin routes exist only when `ADMIN_TOKEN` is set, and they authenticate
+with `X-Admin-Token`.
 
 Errors are `{"error":{"code":"..."}}` with an English code: `invalid_request`,
 `invalid_redirect_uri`, `invalid_state`, `invalid_code`, `oauth_failed`,
@@ -101,6 +107,26 @@ and consumes one of the monthly summaries.
 Without `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID` and
 `R2_SECRET_ACCESS_KEY`, the server caches audio in `CACHE_DIR`. Production sets
 all four and the machine becomes stateless.
+
+## Bot
+
+`apps/bot` is the Discord bot that approves accounts. It talks to the admin API
+with `X-Admin-Token`, so the endpoints only exist when the API was deployed with
+that secret.
+
+```sh
+cd apps/bot
+cp .env.example .env   # Discord app, guild, channel, admin ids and ADMIN_TOKEN
+go run ./cmd/bot
+```
+
+Commands: `/tutor pending`, `/tutor approve email:...`, `/tutor pause email:...`
+and `/tutor revoke email:...`. Only the ids listed in `DISCORD_ADMIN_USER_IDS`
+can run them. The bot posts a message in `DISCORD_CHANNEL_ID` when a new account
+is waiting.
+
+Deploy with `cd apps/bot && fly deploy`: app `waytutor-bot`, one always-on
+machine, no HTTP service.
 
 ## Site
 

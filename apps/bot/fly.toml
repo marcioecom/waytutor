@@ -1,0 +1,8 @@
+app = "waytutor-bot"
+primary_region = "gru"
+kill_signal = "SIGTERM"
+kill_timeout = "10s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
