@@ -1,35 +1,40 @@
-app = "waytutor-api"
-primary_region = "gru"
+# fly.toml app configuration file generated for waytutor on 2026-11-05T13:13:26Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'waytutor'
+primary_region = 'gru'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [deploy]
-  release_command = "/migrate"
+  release_command = '/migrate'
 
 [env]
-  ENV = "production"
-  ADDR = ":8080"
+  ADDR = ':8080'
+  ENV = 'production'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "suspend"
+  auto_stop_machines = 'suspend'
   auto_start_machines = true
   min_machines_running = 0
 
   [http_service.concurrency]
-    type = "requests"
+    type = 'requests'
     hard_limit = 25
     soft_limit = 20
 
-[[http_service.checks]]
-  interval = "30s"
-  timeout = "3s"
-  grace_period = "10s"
-  method = "GET"
-  path = "/healthz"
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '3s'
+    grace_period = '10s'
+    method = 'GET'
+    path = '/healthz'
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "512mb"
+  size = 'shared-cpu-1x'
+  memory = '512mb'
