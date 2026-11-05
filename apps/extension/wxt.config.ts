@@ -13,7 +13,6 @@ export default defineConfig({
       'https://ava.catolica.edu.br/*',
       'https://conteudo.catolica.edu.br/*',
       'https://*.sequences.api.brightspace.com/*',
-      'https://waytutor.fly.dev/*',
       'https://waytutor-api.marcio.run/*',
       'http://localhost:8080/*',
     ],
