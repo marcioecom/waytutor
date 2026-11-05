@@ -1,5 +1,6 @@
-app = "waytutor-api"
+app = "waytutor"
 primary_region = "gru"
+kill_timeout = "130s"
 
 [build]
   dockerfile = "Dockerfile"

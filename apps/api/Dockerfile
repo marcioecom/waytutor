@@ -12,4 +12,4 @@ COPY --from=build /out/api /api
 COPY --from=build /out/migrate /migrate
 ENV ADDR=:8080
 EXPOSE 8080
-ENTRYPOINT ["/api"]
+CMD ["/api"]

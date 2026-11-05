@@ -82,7 +82,9 @@ func run() error {
 	case <-ctx.Done():
 	}
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	// Longer than the slowest synthesis, so a deploy drains instead of cutting
+	// audio that was already reserved and paid for.
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 125*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return fmt.Errorf("shutdown server: %w", err)
