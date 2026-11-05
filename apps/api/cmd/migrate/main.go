@@ -6,7 +6,8 @@ import (
 	"log/slog"
 	"os"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 
 	"github.com/marciojunior/waytutor/apps/api/internal/config"
@@ -26,12 +27,27 @@ func run() error {
 		return err
 	}
 
-	db, err := sql.Open("pgx", dsn)
+	cfg, err := pgx.ParseConfig(dsn)
 	if err != nil {
-		return fmt.Errorf("open database: %w", err)
+		return fmt.Errorf("parse database url: %w", err)
 	}
+	// The pooler in front of Neon runs PgBouncer in transaction mode, which hands
+	// a connection to another client between statements, so cached prepared
+	// statements collide across them.
+	cfg.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+
+	db := stdlib.OpenDB(*cfg)
 	defer db.Close()
 
+	if err := apply(db); err != nil {
+		return err
+	}
+
+	slog.Info("migrations applied")
+	return nil
+}
+
+func apply(db *sql.DB) error {
 	goose.SetBaseFS(migrations.FS)
 	if err := goose.SetDialect("postgres"); err != nil {
 		return fmt.Errorf("set goose dialect: %w", err)
@@ -39,7 +55,5 @@ func run() error {
 	if err := goose.Up(db, "."); err != nil {
 		return fmt.Errorf("apply migrations: %w", err)
 	}
-
-	slog.Info("migrations applied")
 	return nil
 }

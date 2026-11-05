@@ -44,7 +44,9 @@ talks to `WXT_API_URL`, which defaults to `http://localhost:8080`. Set it in
 `apps/extension/.env` for a production build.
 
 For an external database, point `DATABASE_URL` at Neon with `sslmode=require`.
-Keep the local Postgres major version in step with Neon's.
+Keep the local Postgres major version in step with Neon's. Either Neon endpoint
+works: the server switches the driver to the simple query protocol, which is what
+survives their pgbouncer-backed pooler.
 
 ## Login
 
