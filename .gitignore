@@ -9,5 +9,6 @@ dist/
 .output/
 .wxt/
 coverage/
+.wrangler/
 
 data/
