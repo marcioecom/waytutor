@@ -8,10 +8,13 @@ export function useScan() {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
       if (!tab?.id) return null
 
-      const material = await scanTab(tab.id)
-      if (!material) return null
+      const result = await scanTab(tab.id)
+      if (!result) return null
 
-      return { ...material, title: displayTitle(tab.title, material.title) }
+      return {
+        ...result,
+        material: { ...result.material, title: displayTitle(tab.title, result.material.title) },
+      }
     },
   })
 }

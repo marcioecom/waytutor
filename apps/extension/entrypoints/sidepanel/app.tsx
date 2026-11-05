@@ -5,7 +5,7 @@ import { messageFor } from '@/modules/account/messages'
 import { BlockedView } from '@/modules/account/ui/blocked-view'
 import { LoginView } from '@/modules/account/ui/login-view'
 import { SessionFooter } from '@/modules/account/ui/session-footer'
-import { MaterialView } from '@/modules/material/ui/material-view'
+import { ReadingView } from '@/modules/reading/ui/reading-view'
 
 export function App() {
   const account = useAccount()
@@ -60,7 +60,7 @@ function Screen({ account }: { account: ReturnType<typeof useAccount> }) {
     case 'active':
       return (
         <div className="flex min-h-0 flex-1 flex-col gap-4">
-          <MaterialView />
+          <ReadingView />
           <SessionFooter account={account.data.account} />
         </div>
       )

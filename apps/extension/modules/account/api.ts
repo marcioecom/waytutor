@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { ApiError, codeOf } from '@/modules/api/errors'
 
 const apiBaseUrl = import.meta.env.WXT_API_URL ?? 'http://localhost:8080'
 
@@ -9,24 +10,10 @@ const accountSchema = z.object({
   status: z.string(),
 })
 
-const errorSchema = z.object({ error: z.object({ code: z.string() }) })
-
 export type Account = z.infer<typeof accountSchema>
-
-export class ApiError extends Error {
-  constructor(readonly code: string) {
-    super(code)
-    this.name = 'ApiError'
-  }
-}
 
 export function apiUrl(path: string): string {
   return `${apiBaseUrl}${path}`
-}
-
-async function codeOf(response: Response): Promise<string> {
-  const parsed = errorSchema.safeParse(await response.json().catch(() => null))
-  return parsed.success ? parsed.data.error.code : 'unknown_error'
 }
 
 export async function exchangeLoginCode(code: string): Promise<{ token: string; account: Account }> {

@@ -1,4 +1,5 @@
-import { ApiError, fetchAccount, type Account } from './api'
+import { ApiError } from '@/modules/api/errors'
+import { fetchAccount, type Account } from './api'
 import { clearToken, readToken } from './storage'
 
 export type AccountState =

@@ -156,8 +156,14 @@ function findMainContainer(doc: Document): HTMLElement {
   return best ?? doc.body
 }
 
-export function extractMaterial(doc: Document = document): Material {
+export type ExtractedMaterial = {
+  material: Material
+  elements: (HTMLElement | null)[]
+}
+
+export function extractMaterial(doc: Document = document): ExtractedMaterial {
   const drafts: Draft[] = []
+  const elements: (HTMLElement | null)[] = []
   const figures: number[] = []
 
   let skipRest = false
@@ -166,12 +172,13 @@ export function extractMaterial(doc: Document = document): Material {
   let title = ''
   let lastWasFigure = false
 
-  const pushText = (raw: string, heading = false) => {
+  const pushText = (raw: string, element: HTMLElement | null, heading = false) => {
     const text = normalizeText(raw)
     if (isNoise(text)) return
     if (drafts.at(-1)?.text === text) return
 
     drafts.push({ text, section, heading })
+    elements.push(element)
     lastWasFigure = false
   }
 
@@ -219,7 +226,7 @@ export function extractMaterial(doc: Document = document): Material {
 
       if (!title) title = text
       section = text
-      pushText(text, true)
+      pushText(text, node, true)
       return
     }
 
@@ -232,7 +239,7 @@ export function extractMaterial(doc: Document = document): Material {
         .filter((item) => item && !isNoise(item))
 
       // A list is one speakable unit: one request, one highlight, one Passage.
-      if (items.length) pushText(`${items.join('; ')}.`)
+      if (items.length) pushText(`${items.join('; ')}.`, node)
       return
     }
 
@@ -242,7 +249,7 @@ export function extractMaterial(doc: Document = document): Material {
           .map((cell) => textOf(cell))
           .filter(Boolean)
 
-        if (cells.length) pushText(cells.join('. '))
+        if (cells.length) pushText(cells.join('. '), row as HTMLElement)
       }
       return
     }
@@ -253,7 +260,7 @@ export function extractMaterial(doc: Document = document): Material {
 
       const text = textOf(node)
       if (/^prezado\(a\) estudante/i.test(text)) return
-      pushText(text)
+      pushText(text, node)
       return
     }
 
@@ -262,7 +269,7 @@ export function extractMaterial(doc: Document = document): Material {
 
   walk(findMainContainer(doc))
 
-  if (!drafts.length && !skipRest) pushText(innerTextOf(doc.body))
+  if (!drafts.length && !skipRest) pushText(innerTextOf(doc.body), null)
 
   // A summary often repeats the section headings. When a heading shows up again
   // later, the first occurrence is the summary and should not be read.
@@ -273,12 +280,14 @@ export function extractMaterial(doc: Document = document): Material {
 
   const newIndex = new Map<number, number>()
   const passages: Passage[] = []
+  const keptElements: (HTMLElement | null)[] = []
 
   drafts.forEach((draft, position) => {
     if (draft.heading && lastHeading.get(draft.text.toLowerCase()) !== position) return
 
     newIndex.set(position, passages.length)
     passages.push({ text: draft.text, section: draft.section })
+    keptElements.push(elements[position] ?? null)
   })
 
   const figureAfter = [
@@ -294,9 +303,12 @@ export function extractMaterial(doc: Document = document): Material {
   const heading = firstHeading ? textOf(firstHeading) : ''
 
   return {
-    title: title || heading || 'Material sem título',
-    url: doc.location?.href ?? '',
-    passages,
-    figureAfter,
+    material: {
+      title: title || heading || 'Material sem título',
+      url: doc.location?.href ?? '',
+      passages,
+      figureAfter,
+    },
+    elements: keptElements,
   }
 }

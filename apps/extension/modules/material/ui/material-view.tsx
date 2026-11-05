@@ -1,7 +1,12 @@
 import { Button } from '@/components/button'
 import { useScan } from '../hooks/use-scan'
 
-export function MaterialView() {
+type Props = {
+  currentIndex: number
+  onSelect: (index: number) => void
+}
+
+export function MaterialView({ currentIndex, onSelect }: Props) {
   const scan = useScan()
 
   if (scan.isPending) {
@@ -19,7 +24,7 @@ export function MaterialView() {
     )
   }
 
-  const material = scan.data
+  const material = scan.data?.material
   if (!material) {
     return (
       <div className="flex flex-col gap-3">
@@ -49,16 +54,29 @@ export function MaterialView() {
         </p>
       </div>
 
-      <ol className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
+      <ol className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
         {material.passages.map((passage, index) => (
-          <li key={index} className="flex gap-2 text-sm leading-relaxed text-ink-muted">
-            <span className="mt-0.5 shrink-0 text-xs tabular-nums text-ink-faint">{index + 1}</span>
-            <span>
-              {passage.text}
-              {material.figureAfter.includes(index) ? (
-                <span className="mt-1 block text-xs text-lamp">▢ figura</span>
-              ) : null}
-            </span>
+          <li key={index}>
+            <button
+              type="button"
+              onClick={() => onSelect(index)}
+              aria-current={index === currentIndex || undefined}
+              className={`flex w-full gap-2 rounded-sm border-l-2 py-1 pl-2 text-left text-sm leading-relaxed transition ${
+                index === currentIndex
+                  ? 'border-lamp text-ink'
+                  : 'border-transparent text-ink-muted hover:border-line-2 hover:text-ink'
+              }`}
+            >
+              <span className="mt-0.5 shrink-0 text-xs tabular-nums text-ink-faint">
+                {index + 1}
+              </span>
+              <span>
+                {passage.text}
+                {material.figureAfter.includes(index) ? (
+                  <span className="mt-1 block text-xs text-lamp">▢ figura</span>
+                ) : null}
+              </span>
+            </button>
           </li>
         ))}
       </ol>

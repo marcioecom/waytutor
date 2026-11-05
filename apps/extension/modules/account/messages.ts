@@ -1,4 +1,4 @@
-import { ApiError } from './api'
+import { ApiError } from '@/modules/api/errors'
 
 const fallback = 'Algo deu errado. Tente de novo.'
 
@@ -11,8 +11,19 @@ const messages: Record<string, string> = {
   invalid_redirect_uri: 'O login não foi concluído. Tente de novo.',
   oauth_failed: 'O Google não confirmou o login. Tente de novo.',
   login_cancelled: 'Login cancelado.',
+  quota_exceeded: 'Sua cota do mês acabou.',
+  rate_limited: 'Muitos pedidos seguidos. Espere um minuto.',
+  provider_quota: 'O serviço de voz está indisponível agora.',
+  provider_error: 'Não foi possível gerar o áudio. Tente de novo.',
+  provider_auth: 'Não foi possível gerar o áudio. Tente de novo.',
+  empty_text: 'O trecho está vazio.',
+  text_too_long: 'O trecho é longo demais para uma leitura.',
+}
+
+export function messageForCode(code: string): string {
+  return messages[code] ?? fallback
 }
 
 export function messageFor(error: unknown): string {
-  return error instanceof ApiError ? (messages[error.code] ?? fallback) : fallback
+  return error instanceof ApiError ? messageForCode(error.code) : fallback
 }

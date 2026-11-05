@@ -6,16 +6,14 @@ function extract(html: string) {
 }
 
 function texts(html: string) {
-  return extract(html).passages.map((passage) => passage.text)
+  return extract(html).material.passages.map((passage) => passage.text)
 }
 
 describe('extractMaterial', () => {
   it('turns each paragraph into one passage, keeping headings first', () => {
-    expect(texts('<h1>Banco de dados</h1><p>Primeiro parágrafo.</p><p>Segundo parágrafo.</p>')).toEqual([
-      'Banco de dados',
-      'Primeiro parágrafo.',
-      'Segundo parágrafo.',
-    ])
+    expect(
+      texts('<h1>Banco de dados</h1><p>Primeiro parágrafo.</p><p>Segundo parágrafo.</p>'),
+    ).toEqual(['Banco de dados', 'Primeiro parágrafo.', 'Segundo parágrafo.'])
   })
 
   it('reads a whole list as a single passage', () => {
@@ -35,7 +33,7 @@ describe('extractMaterial', () => {
   it('marks the passage a figure follows', () => {
     const material = extract(
       '<p>Antes da figura.</p><figure><img alt="Diagrama"><figcaption>Figura 1 — Diagrama</figcaption></figure><p>Depois da figura.</p>',
-    )
+    ).material
 
     expect(material.passages.map((passage) => passage.text)).toEqual([
       'Antes da figura.',
@@ -80,11 +78,20 @@ describe('extractMaterial', () => {
 
   it('follows the section while collecting passages', () => {
     const material = extract('<h2>Modelo relacional</h2><p>Uma tabela.</p><p>Outra tabela.</p>')
+      .material
 
     expect(material.passages.map((passage) => passage.section)).toEqual([
       'Modelo relacional',
       'Modelo relacional',
       'Modelo relacional',
     ])
+  })
+
+  it('returns one element per passage so the page can highlight it', () => {
+    const extracted = extract('<h2>Seção</h2><p>Primeiro parágrafo.</p><p>Segundo parágrafo.</p>')
+
+    expect(extracted.elements).toHaveLength(extracted.material.passages.length)
+    expect(extracted.elements[1]?.tagName).toBe('P')
+    expect(extracted.elements[1]?.textContent).toContain('Primeiro parágrafo.')
   })
 })
