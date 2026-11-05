@@ -6,7 +6,9 @@ export default defineConfig({
   vite: () => ({ plugins: [tailwindcss()] }),
   manifest: {
     name: 'WayTutor',
-    description: 'Lê em voz alta o material do portal e resume o que foi lido.',
+    description:
+      'Lê o material do portal da faculdade em voz alta, com pausa nas figuras e um resumo falado no fim.',
+    minimum_chrome_version: '116',
     icons: {
       16: 'icon/16.png',
       32: 'icon/32.png',

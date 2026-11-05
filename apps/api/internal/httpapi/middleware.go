@@ -40,7 +40,6 @@ func requestLog(next http.Handler) http.Handler {
 			slog.Int("status", rec.status),
 			slog.Duration("duration", time.Since(start)),
 			slog.Int("bytes", rec.bytes),
-			slog.String("client_ip", r.RemoteAddr),
 		)
 	})
 }
