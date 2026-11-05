@@ -114,6 +114,11 @@ make check
 cd apps/api && fly deploy
 ```
 
+The API answers on `https://waytutor-api.marcio.run`, and `waytutor.fly.dev` is
+the platform origin for debugging. The site and the privacy policy live on
+`https://waytutor.marcio.run`. `apps/extension/.env.production` points the build
+at the custom domain.
+
 `fly.toml` runs `cmd/migrate` as the release command, so migrations land before
 the new release serves traffic. Secrets live in `fly secrets`, never in the
 image.
