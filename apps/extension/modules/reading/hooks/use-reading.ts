@@ -190,15 +190,8 @@ export function useReading({
     [material, start],
   )
 
-  return {
-    index,
-    status,
-    errorCode,
-    toggle,
-    goTo,
-    speak,
-    stop,
-    next: () => goTo(index + 1),
-    previous: () => goTo(index - 1),
-  }
+  const next = useCallback(() => goTo(index + 1), [goTo, index])
+  const previous = useCallback(() => goTo(index - 1), [goTo, index])
+
+  return { index, status, errorCode, toggle, goTo, speak, stop, next, previous }
 }

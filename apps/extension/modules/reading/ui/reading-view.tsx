@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Workspace } from '@/modules/account/api'
 import { useScan } from '@/modules/material/hooks/use-scan'
 import { MaterialView } from '@/modules/material/ui/material-view'
@@ -7,6 +7,9 @@ import { PreferencesBar } from '@/modules/preferences/ui/preferences-bar'
 import { SummaryView } from '@/modules/summary/ui/summary-view'
 import { useReading } from '../hooks/use-reading'
 import { PlayerBar } from './player-bar'
+
+// Roughly 900 characters per minute at 1x, the pace the voice lands on.
+const charsPerMinute = 900
 
 export function ReadingView({ workspace }: { workspace: Workspace }) {
   const scan = useScan()
@@ -23,6 +26,38 @@ export function ReadingView({ workspace }: { workspace: Workspace }) {
     preferences,
     defaultVoice: workspace.defaultVoice,
   })
+
+  const remaining = material?.passages
+    .slice(reading.index)
+    .reduce((total, passage) => total + passage.text.length, 0)
+
+  const remainingMinutes = Math.max(
+    1,
+    Math.round((remaining ?? 0) / (charsPerMinute * preferences.speed)),
+  )
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      if (target?.closest('select, input, textarea')) return
+
+      if (event.code === 'Space') {
+        event.preventDefault()
+        reading.toggle()
+        return
+      }
+      if (event.code === 'ArrowRight') {
+        reading.next()
+        return
+      }
+      if (event.code === 'ArrowLeft') {
+        reading.previous()
+      }
+    }
+
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [reading.toggle, reading.next, reading.previous])
 
   const materialText = material?.passages.map((passage) => passage.text).join('\n\n') ?? ''
 
@@ -54,6 +89,7 @@ export function ReadingView({ workspace }: { workspace: Workspace }) {
         status={reading.status}
         index={reading.index}
         total={material?.passages.length ?? 0}
+        remainingMinutes={remainingMinutes}
         errorCode={reading.errorCode}
         onToggle={reading.toggle}
         onPrevious={reading.previous}

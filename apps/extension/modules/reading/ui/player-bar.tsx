@@ -7,6 +7,7 @@ type Props = {
   status: ReadingStatus
   index: number
   total: number
+  remainingMinutes: number
   errorCode: string | null
   onToggle: () => void
   onPrevious: () => void
@@ -20,9 +21,27 @@ const labels: Record<ReadingStatus, string> = {
   paused: 'Continuar',
 }
 
-export function PlayerBar({ status, index, total, errorCode, onToggle, onPrevious, onNext }: Props) {
+export function PlayerBar({
+  status,
+  index,
+  total,
+  remainingMinutes,
+  errorCode,
+  onToggle,
+  onPrevious,
+  onNext,
+}: Props) {
+  const percent = total === 0 ? 0 : Math.round(((index + 1) / total) * 100)
+
   return (
     <div className="flex flex-col gap-2 border-t border-line pt-3">
+      <div className="h-0.5 w-full overflow-hidden rounded-full bg-night-4">
+        <div
+          className="h-full rounded-full bg-lamp transition-[width] duration-300"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -52,10 +71,13 @@ export function PlayerBar({ status, index, total, errorCode, onToggle, onPreviou
         >
           ▶
         </Button>
+      </div>
 
-        <span className="w-12 text-right text-xs tabular-nums text-ink-faint">
-          {total === 0 ? '—' : `${index + 1}/${total}`}
+      <div className="flex items-baseline justify-between text-xs text-ink-faint">
+        <span className="tabular-nums">
+          {total === 0 ? '—' : `${index + 1} de ${total}`}
         </span>
+        <span>{status === 'loading' ? '' : `~${remainingMinutes} min restantes`}</span>
       </div>
 
       {errorCode ? (

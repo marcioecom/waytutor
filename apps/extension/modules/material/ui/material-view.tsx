@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Button } from '@/components/button'
 import { Spinner } from '@/components/spinner'
 import { useScan } from '../hooks/use-scan'
@@ -10,6 +11,13 @@ type Props = {
 
 export function MaterialView({ currentIndex, onSelect, onSummary }: Props) {
   const scan = useScan()
+  const current = useRef<HTMLButtonElement | null>(null)
+
+  // block: 'nearest' only scrolls when the Passage is out of view, so the list
+  // does not fight the reader while they browse it.
+  useEffect(() => {
+    current.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [currentIndex])
 
   if (scan.isPending) {
     return (
@@ -65,6 +73,7 @@ export function MaterialView({ currentIndex, onSelect, onSummary }: Props) {
         {material.passages.map((passage, index) => (
           <li key={index}>
             <button
+              ref={index === currentIndex ? current : undefined}
               type="button"
               onClick={() => onSelect(index)}
               aria-current={index === currentIndex || undefined}
