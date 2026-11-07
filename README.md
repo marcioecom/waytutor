@@ -31,7 +31,8 @@ interface is in Portuguese; the code and this README are in English.
 - Saves the position per Material, so reopening the same topic resumes where it
   stopped, even after the panel was closed.
 - Offers 30 Gemini voices (Kore by default), playback from 0.75x to 2x and a
-  voice change that applies from the next Passage.
+  voice change that applies from the next Passage. A custom picker pins
+  favorite voices above the full list.
 - Generates a 2 to 4 minute spoken summary from the Material, grounded only in
   what the Material says.
 

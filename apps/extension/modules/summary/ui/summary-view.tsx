@@ -26,9 +26,13 @@ export function SummaryView({ materialId, materialText, status, onSpeak, onToggl
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <h1 className="font-serif text-base text-ink">Resumo</h1>
-        <Button variant="ghost" className="px-0 py-1" onClick={onClose}>
+      <div className="flex items-baseline justify-between gap-3">
+        <h1 className="text-lg font-semibold tracking-[-0.02em] text-ink">Resumo</h1>
+        <Button
+          variant="quiet"
+          className="inline-flex min-h-9 items-center text-xs"
+          onClick={onClose}
+        >
           Voltar
         </Button>
       </div>
@@ -50,7 +54,7 @@ export function SummaryView({ materialId, materialText, status, onSpeak, onToggl
       ) : null}
 
       {text ? (
-        <p className="min-h-0 flex-1 overflow-y-auto whitespace-pre-line text-sm leading-relaxed text-ink-muted">
+        <p className="min-h-0 flex-1 overflow-y-auto whitespace-pre-line text-[13px] leading-relaxed text-ink-muted">
           {text}
         </p>
       ) : null}

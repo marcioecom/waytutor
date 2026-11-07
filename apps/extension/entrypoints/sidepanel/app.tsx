@@ -11,10 +11,12 @@ export function App() {
   const account = useAccount()
 
   return (
-    <main className="flex h-dvh flex-col gap-5 overflow-hidden bg-night px-5 py-6">
-      <header>
-        <p className="font-serif text-xl text-lamp">WayTutor</p>
-        <p className="text-sm text-ink-faint">professor de bolso</p>
+    <main className="flex h-dvh flex-col gap-4 overflow-hidden px-4 py-4">
+      <header className="flex items-baseline justify-between gap-3">
+        <p className="text-[19px] font-semibold leading-none tracking-[-0.02em]">
+          Way<span className="text-moss">Tutor</span>
+        </p>
+        <p className="text-[10px] tracking-[0.03em] text-ink-faint">professor de bolso</p>
       </header>
 
       <Screen account={account} />

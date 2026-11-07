@@ -1,32 +1,63 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Geom';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/geom.woff2') format('woff2');
+}
+
 @theme {
-  --color-night: #17120e;
-  --color-night-2: #1d1712;
-  --color-night-3: #251d15;
-  --color-night-4: #2e241a;
+  --color-night: #0f150e;
+  --color-night-2: #151c13;
+  --color-night-3: #1b2418;
+  --color-night-4: #232e1e;
 
-  --color-line: #342a20;
-  --color-line-2: #4a3a2b;
+  --color-line: #2a3524;
+  --color-line-2: #3d4a33;
 
-  --color-ink: #f4ead9;
-  --color-ink-muted: #c3b19a;
-  --color-ink-faint: #8a7a68;
+  --color-ink: #f3eedc;
+  --color-ink-muted: #c6cbb4;
+  --color-ink-faint: #98a08a;
 
-  --color-lamp: #f0a63c;
-  --color-lamp-bright: #ffb64f;
+  --color-moss: #a9cc8f;
+  --color-moss-bright: #c1dda8;
+  --color-moss-deep: #547a44;
 
-  --color-danger: #f0a08c;
-  --color-danger-bg: #2a1714;
+  /* Waypoint's instrument signal: chartreuse is live. The lamp's half-light
+     is the only warm annotation. */
+  --color-signal: oklch(0.79 0.15 115);
 
-  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Fraunces', Georgia, serif;
+  --color-bulb: #ffd79a;
+  --color-bulb-dim: #c9a06a;
+  --color-bulb-off: #6b5a43;
+  --color-brass: #b98a4f;
+
+  --color-danger: #f2a48e;
+  --color-danger-bg: #2a1a14;
+  --color-danger-line: #4d2b23;
+
+  --color-leaf: #466b4f;
+  --color-capy: #9a6a45;
+  --color-capy-2: #a4714b;
+  --color-capy-ear: #7a5236;
+  --color-capy-ink: #241b15;
+  --color-capy-mark: #e6d8c2;
+
+  --font-sans: 'Geom', ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: 6px;
   --radius-md: 10px;
 
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
   --animate-fade-in: fade-in 200ms ease-out;
   --animate-pulse-soft: pulse-soft 2.8s ease-in-out infinite;
+  --animate-capy-blink: capy-blink 7.2s ease-in-out infinite;
+  --animate-status-pulse: status-pulse 2.4s ease-in-out infinite;
+  --animate-lamp-breathe: lamp-breathe 6s ease-in-out infinite;
+  --animate-lamp-warm: lamp-warm 1.6s ease-in-out infinite;
 
   @keyframes fade-in {
     from {
@@ -37,10 +68,60 @@
   @keyframes pulse-soft {
     0%,
     100% {
-      border-left-color: var(--color-lamp);
+      border-left-color: var(--color-moss);
     }
     50% {
-      border-left-color: var(--color-lamp-bright);
+      border-left-color: var(--color-moss-bright);
+    }
+  }
+
+  @keyframes capy-blink {
+    0%,
+    93%,
+    100% {
+      transform: scaleY(1);
+    }
+    95.5%,
+    97% {
+      transform: scaleY(0.12);
+    }
+  }
+
+  @keyframes status-pulse {
+    0% {
+      box-shadow: 0 0 0 0 oklch(0.79 0.15 115 / 0.34);
+    }
+    70% {
+      box-shadow: 0 0 0 5px oklch(0.79 0.15 115 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 oklch(0.79 0.15 115 / 0);
+    }
+  }
+
+  @keyframes lamp-breathe {
+    0%,
+    100% {
+      opacity: 0.88;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes lamp-warm {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 0.92;
+    }
+  }
+
+  @keyframes dither-drift {
+    to {
+      background-position: 8px 8px;
     }
   }
 }
@@ -51,4 +132,54 @@
 
 body {
   @apply bg-night text-ink font-sans antialiased;
+  background-image: radial-gradient(120% 34% at 22% 0%, rgba(169, 204, 143, 0.07), transparent 62%);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-night);
+}
+
+/* The scene is a physical room: a warm pool of bulb light inside a green
+   room. The halo is a blurred ellipse so the light never ends on a rectangle.
+   The dither is a separate circular field from the Waypoint site, masked to
+   fade before its own edge. */
+.nook-halo {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 24% 56%, rgba(255, 205, 130, 0.32), transparent 34%),
+    radial-gradient(circle at 50% 45%, rgba(169, 204, 143, 0.22), transparent 70%);
+  filter: blur(10px);
+  transition: opacity 700ms var(--ease-soft);
+}
+
+.nook-dither {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'%3E%3Cg fill='%23b8c546'%3E%3Crect x='0' y='0' width='2' height='2' opacity='.85'/%3E%3Crect x='4' y='0' width='2' height='2' opacity='.35'/%3E%3Crect x='2' y='2' width='2' height='2' opacity='.65'/%3E%3Crect x='6' y='2' width='2' height='2' opacity='.2'/%3E%3Crect x='3' y='4' width='2' height='2' opacity='.5'/%3E%3Crect x='7' y='4' width='2' height='2' opacity='.9'/%3E%3Crect x='1' y='6' width='2' height='2' opacity='.3'/%3E%3Crect x='5' y='6' width='2' height='2' opacity='.7'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 8px 8px;
+  border-radius: 50%;
+  mask-image: radial-gradient(circle closest-side, #000 0%, transparent 80%);
+  mix-blend-mode: screen;
+  animation: dither-drift 7s linear infinite;
+  pointer-events: none;
+}
+
+.nook-line {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-line-2) 14%,
+    var(--color-line-2) 86%,
+    transparent
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nook-dither {
+    animation: none;
+  }
 }

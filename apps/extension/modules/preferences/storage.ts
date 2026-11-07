@@ -4,12 +4,14 @@ export const defaults = {
   voice: null,
   speed: 1.25,
   figurePauseSeconds: 5,
+  favoriteVoices: [] as string[],
 } as const
 
 export const preferencesSchema = z.object({
   voice: z.string().min(1).nullable().catch(defaults.voice),
   speed: z.number().min(0.5).max(2).catch(defaults.speed),
   figurePauseSeconds: z.number().min(0).max(15).catch(defaults.figurePauseSeconds),
+  favoriteVoices: z.array(z.string()).catch(defaults.favoriteVoices),
 })
 
 export type Preferences = z.infer<typeof preferencesSchema>
