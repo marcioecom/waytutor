@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -29,12 +30,7 @@ var voices = []string{
 }
 
 func ValidVoice(voice string) bool {
-	for _, known := range voices {
-		if known == voice {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(voices, voice)
 }
 
 func Voices() []string {

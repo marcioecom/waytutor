@@ -102,7 +102,7 @@ export function Stage({
             disabled={total === 0 || status === 'loading'}
             className="group relative grid size-[clamp(76px,20vw,82px)] shrink-0 place-items-center rounded-full disabled:opacity-50"
           >
-            <span className="absolute -top-1.5 left-1/2 h-1.5 w-2.5 -translate-x-1/2 rounded-[2px] bg-moss transition-colors duration-150 group-hover:bg-moss-bright" />
+            <span className="absolute -top-1.5 left-1/2 h-1.5 w-2.5 -translate-x-1/2 rounded-xs bg-moss transition-colors duration-150 group-hover:bg-moss-bright" />
             <svg className="absolute inset-0 size-full -rotate-90" viewBox="0 0 88 88" aria-hidden="true">
               <circle className="fill-none stroke-night-4" cx="44" cy="44" r={RING_RADIUS} strokeWidth="3.5" />
               <circle

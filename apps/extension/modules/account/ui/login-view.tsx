@@ -11,7 +11,7 @@ export function LoginView() {
     <div className="flex flex-1 flex-col items-center justify-center gap-5 pb-8 text-center">
       <div className="relative">
         <div className="nook-halo absolute -inset-8 rounded-full opacity-45" />
-        <Capybara className="relative h-24 w-[6.5rem]" />
+        <Capybara className="relative h-24 w-26" />
       </div>
 
       <div className="flex max-w-[34ch] flex-col gap-1.5">

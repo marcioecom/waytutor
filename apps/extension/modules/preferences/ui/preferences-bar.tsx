@@ -43,7 +43,7 @@ export function PreferencesBar({ voices, preferences, onChange }: Props) {
                 type="button"
                 aria-pressed={active}
                 onClick={() => onChange({ speed })}
-                className={`h-[30px] flex-1 rounded-[5px] text-[11px] tabular-nums transition-colors duration-150 ${
+                className={`h-7.5 flex-1 rounded-[5px] text-[11px] tabular-nums transition-colors duration-150 ${
                   active
                     ? 'bg-moss font-semibold text-night'
                     : 'text-ink-muted hover:bg-night-3 hover:text-ink'
