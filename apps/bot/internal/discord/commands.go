@@ -11,6 +11,9 @@ func tutorCommand() *discordgo.ApplicationCommand {
 			subcommand("approve", "Libera uma conta", emailOption()),
 			subcommand("pause", "Pausa uma conta", emailOption()),
 			subcommand("revoke", "Encerra as sessões de uma conta", emailOption()),
+			subcommand("usage", "Uso do dia, do mês, gráfico de 14 dias e contas que mais usaram"),
+			subcommand("accounts", "Contas com uso do mês e último acesso"),
+			subcommand("account", "Ficha de uma conta", emailOption()),
 		},
 	}
 }

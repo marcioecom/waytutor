@@ -7,23 +7,35 @@ import (
 )
 
 type AdminAccount struct {
-	ID        string
-	Email     string
-	Name      string
-	Status    string
-	CreatedAt time.Time
+	ID            string
+	Email         string
+	Name          string
+	Status        string
+	CreatedAt     time.Time
+	UsageChars    int64
+	UsageRequests int64
+	Summaries     int64
+	LastSeenAt    *time.Time
 }
 
-func (s *Store) ListAccounts(ctx context.Context, status, email string, limit int) ([]AdminAccount, error) {
+func (s *Store) ListAccounts(ctx context.Context, status, email, period string, limit int) ([]AdminAccount, error) {
 	const query = `
-		SELECT id, email, name, status, created_at
-		FROM accounts
-		WHERE ($1 = '' OR status = $1)
-		  AND ($2 = '' OR lower(email) = lower($2))
-		ORDER BY created_at DESC
-		LIMIT $3`
+		SELECT a.id, a.email, a.name, a.status, a.created_at,
+		       COALESCE(u.tts_chars, 0), COALESCE(u.tts_requests, 0), COALESCE(u.summaries, 0),
+		       seen.last_seen_at
+		FROM accounts a
+		LEFT JOIN usage u ON u.account_id = a.id AND u.period = $3
+		LEFT JOIN LATERAL (
+			SELECT MAX(last_seen_at) AS last_seen_at
+			FROM access_sessions
+			WHERE account_id = a.id
+		) seen ON true
+		WHERE ($1 = '' OR a.status = $1)
+		  AND ($2 = '' OR lower(a.email) = lower($2))
+		ORDER BY a.created_at DESC
+		LIMIT $4`
 
-	rows, err := s.pool.Query(ctx, query, status, email, limit)
+	rows, err := s.pool.Query(ctx, query, status, email, period, limit)
 	if err != nil {
 		return nil, fmt.Errorf("list accounts: %w", err)
 	}
@@ -32,7 +44,10 @@ func (s *Store) ListAccounts(ctx context.Context, status, email string, limit in
 	var accounts []AdminAccount
 	for rows.Next() {
 		var a AdminAccount
-		if err := rows.Scan(&a.ID, &a.Email, &a.Name, &a.Status, &a.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&a.ID, &a.Email, &a.Name, &a.Status, &a.CreatedAt,
+			&a.UsageChars, &a.UsageRequests, &a.Summaries, &a.LastSeenAt,
+		); err != nil {
 			return nil, fmt.Errorf("scan account: %w", err)
 		}
 		accounts = append(accounts, a)

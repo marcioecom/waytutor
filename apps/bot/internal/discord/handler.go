@@ -2,7 +2,6 @@ package discord
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -29,6 +28,15 @@ func NewHandler(cfg config.Config, client *api.Client, logger *slog.Logger) *Han
 	}
 
 	return &Handler{api: client, logger: logger, admins: admins}
+}
+
+type reply struct {
+	content string
+	embeds  []*discordgo.MessageEmbed
+}
+
+func text(content string) reply {
+	return reply{content: content}
 }
 
 func (h *Handler) OnInteraction(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
@@ -61,88 +69,10 @@ func (h *Handler) handleCommand(session *discordgo.Session, interaction *discord
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
-	content := h.run(ctx, subcommand)
-	if err := editResponse(session, interaction, content); err != nil {
+	answer := h.run(ctx, subcommand)
+	if err := editResponse(session, interaction, answer); err != nil {
 		h.logger.Error("edit interaction response failed", "error", err)
 	}
-}
-
-func (h *Handler) run(ctx context.Context, option *discordgo.ApplicationCommandInteractionDataOption) string {
-	if option.Name == "pending" {
-		return h.pending(ctx)
-	}
-
-	email := strings.ToLower(strings.TrimSpace(optionValue(option, "email")))
-	if email == "" {
-		return "Informe o e-mail da conta."
-	}
-
-	accounts, err := h.api.List(ctx, "", email)
-	if err != nil {
-		return h.failure("list accounts", err)
-	}
-	if len(accounts) == 0 {
-		return fmt.Sprintf("Não encontrei conta com o e-mail %s.", email)
-	}
-	account := accounts[0]
-
-	switch option.Name {
-	case "approve":
-		if err := h.api.SetStatus(ctx, account.ID, "active"); err != nil {
-			return h.failure("approve account", err)
-		}
-		return fmt.Sprintf("Liberado: %s.", account.Email)
-
-	case "pause":
-		if err := h.api.SetStatus(ctx, account.ID, "paused"); err != nil {
-			return h.failure("pause account", err)
-		}
-		return fmt.Sprintf("Pausado: %s.", account.Email)
-
-	case "revoke":
-		revoked, err := h.api.RevokeSessions(ctx, account.ID)
-		if err != nil {
-			return h.failure("revoke sessions", err)
-		}
-		return fmt.Sprintf("Sessões encerradas de %s: %d.", account.Email, revoked)
-	}
-
-	return "Comando desconhecido."
-}
-
-func (h *Handler) pending(ctx context.Context) string {
-	accounts, err := h.api.List(ctx, "pending", "")
-	if err != nil {
-		return h.failure("list pending", err)
-	}
-	if len(accounts) == 0 {
-		return "Nenhum cadastro aguardando."
-	}
-
-	var builder strings.Builder
-	builder.WriteString("Aguardando liberação:\n")
-	for _, account := range accounts {
-		fmt.Fprintf(&builder, "• %s (%s)\n", account.Email, nameOr(account.Name))
-	}
-	builder.WriteString("\nLibere com /tutor approve email:<e-mail>")
-	return builder.String()
-}
-
-func (h *Handler) failure(action string, err error) string {
-	h.logger.Error("admin request failed", "action", action, "error", err)
-
-	var status api.StatusError
-	if errors.As(err, &status) && status.Code == 404 {
-		return "A conta não existe mais."
-	}
-	return "A API recusou o pedido. Veja o log do bot."
-}
-
-func nameOr(name string) string {
-	if strings.TrimSpace(name) == "" {
-		return "sem nome"
-	}
-	return name
 }
 
 func userID(interaction *discordgo.InteractionCreate) string {
@@ -179,7 +109,7 @@ func (h *Handler) reply(session *discordgo.Session, interaction *discordgo.Inter
 }
 
 // The API can be cold, so answer within Discord's three seconds and edit later.
-func editResponse(session *discordgo.Session, interaction *discordgo.InteractionCreate, content string) error {
+func editResponse(session *discordgo.Session, interaction *discordgo.InteractionCreate, answer reply) error {
 	err := session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{Flags: discordgo.MessageFlagsEphemeral},
@@ -188,9 +118,15 @@ func editResponse(session *discordgo.Session, interaction *discordgo.Interaction
 		return fmt.Errorf("defer response: %w", err)
 	}
 
-	if _, err := session.InteractionResponseEdit(interaction.Interaction, &discordgo.WebhookEdit{
-		Content: &content,
-	}); err != nil {
+	edit := &discordgo.WebhookEdit{}
+	if answer.content != "" {
+		edit.Content = &answer.content
+	}
+	if len(answer.embeds) > 0 {
+		edit.Embeds = &answer.embeds
+	}
+
+	if _, err := session.InteractionResponseEdit(interaction.Interaction, edit); err != nil {
 		return fmt.Errorf("edit response: %w", err)
 	}
 	return nil

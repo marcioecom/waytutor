@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/marciojunior/waytutor/apps/api/internal/quota"
 	"github.com/marciojunior/waytutor/apps/api/internal/store"
 )
 
@@ -23,11 +24,15 @@ var allowedStatuses = map[string]bool{
 }
 
 type adminAccountBody struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	Name      string `json:"name"`
-	Status    string `json:"status"`
-	CreatedAt string `json:"createdAt"`
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	Name          string `json:"name"`
+	Status        string `json:"status"`
+	CreatedAt     string `json:"createdAt"`
+	UsageChars    int64  `json:"usageChars"`
+	UsageRequests int64  `json:"usageRequests"`
+	Summaries     int64  `json:"summaries"`
+	LastSeenAt    string `json:"lastSeenAt,omitempty"`
 }
 
 func (h *api) admin(next http.HandlerFunc) http.HandlerFunc {
@@ -44,7 +49,8 @@ func (h *api) admin(next http.HandlerFunc) http.HandlerFunc {
 func (h *api) listAccounts(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 
-	accounts, err := h.store.ListAccounts(r.Context(), query.Get("status"), query.Get("email"), adminListLimit)
+	period := quota.Period(time.Now())
+	accounts, err := h.store.ListAccounts(r.Context(), query.Get("status"), query.Get("email"), period, adminListLimit)
 	if err != nil {
 		respondInternal(w, r, err)
 		return
@@ -52,13 +58,20 @@ func (h *api) listAccounts(w http.ResponseWriter, r *http.Request) {
 
 	body := make([]adminAccountBody, 0, len(accounts))
 	for _, account := range accounts {
-		body = append(body, adminAccountBody{
-			ID:        account.ID,
-			Email:     account.Email,
-			Name:      account.Name,
-			Status:    account.Status,
-			CreatedAt: account.CreatedAt.UTC().Format(time.RFC3339),
-		})
+		item := adminAccountBody{
+			ID:            account.ID,
+			Email:         account.Email,
+			Name:          account.Name,
+			Status:        account.Status,
+			CreatedAt:     account.CreatedAt.UTC().Format(time.RFC3339),
+			UsageChars:    account.UsageChars,
+			UsageRequests: account.UsageRequests,
+			Summaries:     account.Summaries,
+		}
+		if account.LastSeenAt != nil {
+			item.LastSeenAt = account.LastSeenAt.UTC().Format(time.RFC3339)
+		}
+		body = append(body, item)
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"accounts": body})
 }

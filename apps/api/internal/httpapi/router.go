@@ -72,6 +72,7 @@ func New(d Deps) http.Handler {
 	// Without a token there is no admin surface at all.
 	if h.adminToken != "" {
 		mux.HandleFunc("GET /admin/accounts", h.admin(h.listAccounts))
+		mux.HandleFunc("GET /admin/usage", h.admin(h.usage))
 		mux.HandleFunc("POST /admin/accounts/{id}/status", h.admin(h.setAccountStatus))
 		mux.HandleFunc("DELETE /admin/accounts/{id}/sessions", h.admin(h.revokeSessions))
 	}

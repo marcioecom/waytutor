@@ -12,11 +12,58 @@ import (
 )
 
 type Account struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	Name      string `json:"name"`
-	Status    string `json:"status"`
-	CreatedAt string `json:"createdAt"`
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	Name          string `json:"name"`
+	Status        string `json:"status"`
+	CreatedAt     string `json:"createdAt"`
+	UsageChars    int64  `json:"usageChars"`
+	UsageRequests int64  `json:"usageRequests"`
+	Summaries     int64  `json:"summaries"`
+	LastSeenAt    string `json:"lastSeenAt"`
+}
+
+type Usage struct {
+	Day      string         `json:"day"`
+	Period   string         `json:"period"`
+	Today    UsageTotals    `json:"today"`
+	Month    UsageTotals    `json:"month"`
+	Limits   UsageLimits    `json:"limits"`
+	Accounts UsageAccounts  `json:"accounts"`
+	Daily    []UsageDay     `json:"daily"`
+	Top      []UsageAccount `json:"top"`
+}
+
+type UsageTotals struct {
+	Chars     int64 `json:"chars"`
+	Requests  int64 `json:"requests"`
+	Summaries int64 `json:"summaries"`
+	Accounts  int64 `json:"accounts"`
+}
+
+type UsageLimits struct {
+	GlobalChars      int64 `json:"globalChars"`
+	AccountChars     int64 `json:"accountChars"`
+	MonthlySummaries int64 `json:"monthlySummaries"`
+}
+
+type UsageAccounts struct {
+	Active  int64 `json:"active"`
+	Pending int64 `json:"pending"`
+	Paused  int64 `json:"paused"`
+}
+
+type UsageDay struct {
+	Day      string `json:"day"`
+	Chars    int64  `json:"chars"`
+	Requests int64  `json:"requests"`
+}
+
+type UsageAccount struct {
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Chars    int64  `json:"chars"`
+	Requests int64  `json:"requests"`
 }
 
 type StatusError struct {
@@ -68,6 +115,14 @@ func (c *Client) RevokeSessions(ctx context.Context, id string) (int64, error) {
 		return 0, err
 	}
 	return body.Revoked, nil
+}
+
+func (c *Client) Usage(ctx context.Context) (Usage, error) {
+	var usage Usage
+	if err := c.do(ctx, http.MethodGet, "/admin/usage", nil, &usage); err != nil {
+		return Usage{}, err
+	}
+	return usage, nil
 }
 
 func (c *Client) do(ctx context.Context, method, path string, payload, into any) error {
