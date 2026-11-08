@@ -65,9 +65,13 @@ func usageEmbed(usage api.Usage) *discordgo.MessageEmbed {
 	for _, day := range usage.Daily {
 		chars = append(chars, day.Chars)
 	}
+	daily := "Sem uso registrado ainda."
+	if !allZero(chars) {
+		daily = sparkline(chars)
+	}
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
 		Name:  fmt.Sprintf("Caracteres por dia (%s)", count(int64(len(chars)), "dia", "dias")),
-		Value: sparkline(chars),
+		Value: daily,
 	})
 
 	if len(usage.Top) > 0 {
@@ -127,6 +131,16 @@ func count(value int64, singular, plural string) string {
 		return number(value) + " " + singular
 	}
 	return number(value) + " " + plural
+}
+
+// allZero keeps an empty series from rendering as a divider made of blocks.
+func allZero(values []int64) bool {
+	for _, value := range values {
+		if value > 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func number(value int64) string {

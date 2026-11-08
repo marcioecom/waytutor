@@ -14,6 +14,15 @@ func TestSparkline(t *testing.T) {
 	}
 }
 
+func TestAllZero(t *testing.T) {
+	if !allZero(nil) || !allZero([]int64{0, 0}) {
+		t.Fatal("expected an empty series to be all zero")
+	}
+	if allZero([]int64{0, 1}) {
+		t.Fatal("expected a series with usage not to be all zero")
+	}
+}
+
 func TestNumber(t *testing.T) {
 	cases := map[int64]string{
 		0:       "0",
