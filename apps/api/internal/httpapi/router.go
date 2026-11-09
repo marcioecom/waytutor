@@ -30,12 +30,13 @@ type Limits struct {
 }
 
 type Deps struct {
-	Store      *store.Store
-	Auth       *auth.Authenticator
-	Cache      cache.Cache
-	Models     *gateway.Client
-	Limits     Limits
-	AdminToken string
+	Store           *store.Store
+	Auth            *auth.Authenticator
+	Cache           cache.Cache
+	Models          *gateway.Client
+	Limits          Limits
+	AdminToken      string
+	AlertWebhookURL string
 }
 
 type api struct {
@@ -77,7 +78,7 @@ func New(d Deps) http.Handler {
 		mux.HandleFunc("DELETE /admin/accounts/{id}/sessions", h.admin(h.revokeSessions))
 	}
 
-	return requestLog(cors(recoverer(mux)))
+	return requestLog(cors(recoverer(mux)), newAlerter(d.AlertWebhookURL))
 }
 
 func (h *api) health(w http.ResponseWriter, r *http.Request) {

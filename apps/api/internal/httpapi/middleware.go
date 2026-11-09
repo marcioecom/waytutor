@@ -24,7 +24,15 @@ func cors(next http.Handler) http.Handler {
 	})
 }
 
-func requestLog(next http.Handler) http.Handler {
+// The health check, the panel and the bot poll these, so logging each healthy
+// call repeats one line every few seconds. A failure still logs.
+var quietRoutes = map[string]bool{
+	"GET /healthz":        true,
+	"GET /v1/me":          true,
+	"GET /admin/accounts": true,
+}
+
+func requestLog(next http.Handler, alerts *alerter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		id := rand.Text()
@@ -33,12 +41,20 @@ func requestLog(next http.Handler) http.Handler {
 		rec := &recorder{ResponseWriter: w, status: http.StatusOK}
 		next.ServeHTTP(rec, r)
 
+		took := time.Since(start)
+		if rec.status >= 500 {
+			alerts.serverError(r, rec.status, id, took)
+		}
+		if rec.status < 400 && quietRoutes[r.Pattern] {
+			return
+		}
+
 		slog.LogAttrs(r.Context(), slog.LevelInfo, "request",
 			slog.String("request_id", id),
 			slog.String("method", r.Method),
 			slog.String("path", r.URL.Path),
 			slog.Int("status", rec.status),
-			slog.Duration("duration", time.Since(start)),
+			slog.Duration("duration", took),
 			slog.Int("bytes", rec.bytes),
 		)
 	})

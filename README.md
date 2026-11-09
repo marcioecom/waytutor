@@ -186,6 +186,7 @@ open, so opening the screen twice in the same session does not pay twice.
 | POST | `/v1/tts` | bearer |
 | POST | `/v1/summary` | bearer |
 | GET | `/admin/accounts?status=&email=` | admin |
+| GET | `/admin/usage` | admin |
 | POST | `/admin/accounts/{id}/status` | admin |
 | DELETE | `/admin/accounts/{id}/sessions` | admin |
 
@@ -197,6 +198,15 @@ limited to 120,000 characters, and every call is a model call.
 
 The admin routes exist only when `ADMIN_TOKEN` is set, and they authenticate
 with `X-Admin-Token`.
+
+The api posts every 5xx response to the Discord webhook in
+`DISCORD_ALERT_WEBHOOK_URL`, the `waytutor-alerts` channel. The message carries
+the route, status, duration and request id, which finds the failure in the
+request log. The same route failing with the same status alerts once per 10
+minutes. Leave the variable empty to turn alerts off.
+
+The health check polls `/healthz`, the panel polls `/v1/me` and the bot polls
+`/admin/accounts`. A successful call to those three is not logged. A failure is.
 
 <details>
 <summary>Error codes</summary>

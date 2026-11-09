@@ -26,6 +26,8 @@ type Config struct {
 	GatewayAPIKey string `env:"AI_GATEWAY_API_KEY" validate:"required"`
 	AdminToken    string `env:"ADMIN_TOKEN"`
 
+	AlertWebhookURL string `env:"DISCORD_ALERT_WEBHOOK_URL" validate:"omitempty,url"`
+
 	CacheDir string `env:"CACHE_DIR" envDefault:"./data/audio" validate:"required"`
 
 	R2Endpoint        string `env:"R2_ENDPOINT" validate:"omitempty,url"`
