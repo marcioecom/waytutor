@@ -1,0 +1,61 @@
+---
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+/*
+ * Pages are not mirrored by route name: the landing page and the two privacy
+ * docs are hand-written per language, so this map is the single place that
+ * knows each page's counterpart in the other language.
+ */
+const counterpart: Record<string, Record<Lang, string>> = {
+  '/': { pt: '/', en: '/en/' },
+  '/privacidade': { pt: '/privacidade', en: '/privacy' },
+  '/privacy': { pt: '/privacidade', en: '/privacy' }
+};
+
+const { lang } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const labels: Record<Lang, string> = { pt: 'Português', en: 'English' };
+
+const links = (Object.entries(labels) as [Lang, string][])
+  // Unknown paths fall back to the home page in each language.
+  .map(([key, label]) => ({
+    key,
+    label,
+    href: (counterpart[path] ?? { pt: '/', en: '/en/' })[key]
+  }));
+---
+
+<details class="lang">
+  <summary aria-label="Language">
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <circle cx="10" cy="10" r="8" />
+      <path d="M2 10h16M10 2c2.5 2.5 2.5 13.5 0 16M10 2c-2.5 2.5-2.5 13.5 0 16" />
+    </svg>
+    <span>{lang.toUpperCase()}</span>
+  </summary>
+
+  <ul class="lang__menu">
+    {
+      links.map(({ key, label, href }) => (
+        <li>
+          <a href={href} aria-current={key === lang ? 'true' : undefined}>
+            {label}
+            {key === lang && <span aria-hidden="true">✓</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</details>
+
+<script>
+  document.addEventListener('click', (event) => {
+    document.querySelectorAll('details.lang[open]').forEach((dropdown) => {
+      if (!dropdown.contains(event.target as Node)) dropdown.removeAttribute('open');
+    });
+  });
+</script>

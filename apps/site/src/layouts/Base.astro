@@ -1,0 +1,73 @@
+---
+import LanguageSwitcher from '../components/LanguageSwitcher.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { htmlLang, type Lang } from '../i18n/ui';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  /** Required when the URL cannot reveal the language, e.g. `/privacy` at the root. */
+  lang?: Lang;
+}
+
+const { title, description, ogImage = '/waytutor-og.png' } = Astro.props;
+const lang = Astro.props.lang ?? getLangFromUrl(Astro.url);
+const html = htmlLang[lang];
+const t = useTranslations(lang);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const storeUrl =
+  'https://chromewebstore.google.com/detail/waytutor/mijecohpljijnlcagmpdgcckpadfldah';
+---
+
+<!doctype html>
+<html lang={html}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0f150e" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="WayTutor" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" href="/icon-128.png" type="image/png" sizes="128x128" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('a.skip')}</a>
+
+    <header class="site-header">
+      <a class="wordmark" href={lang === 'en' ? '/en/' : '/'} aria-label={`WayTutor, ${lang === 'en' ? 'home' : 'início'}`}>
+        <span>Way</span><span>Tutor</span>
+      </a>
+
+      <div class="header-right">
+        <LanguageSwitcher lang={lang} />
+        <a href={storeUrl} class="button button--primary button--small">{t('cta.install')}</a>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p>{t('footer.project')}</p>
+      <p>
+        {t('footer.contact')} <a href="mailto:privacidade@marcio.run">privacidade@marcio.run</a>
+      </p>
+      <p>
+        <a href={lang === 'en' ? '/privacy' : '/privacidade'}>{t('footer.privacy')}</a>
+      </p>
+      <p>© 2026 Waypoint Labs</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/styles.css';
+</style>

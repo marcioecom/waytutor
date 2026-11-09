@@ -56,7 +56,7 @@ Discord bot or the SQL in [Approve an account](#approve-an-account).
 | `apps/extension` | WXT + React side panel, content script, storage |
 | `apps/api` | Go API, migrations, quota and audio cache |
 | `apps/bot` | Go Discord bot that approves accounts |
-| `apps/site` | Static pages for Cloudflare Pages |
+| `apps/site` | Astro static site for Cloudflare Pages |
 | `docs` | ADRs and the mascot specification |
 
 ## Run locally
@@ -252,15 +252,16 @@ machine, no HTTP service.
 
 ## Site
 
-`apps/site` holds plain HTML served by Cloudflare Pages at
-`https://waytutor.marcio.run`. There is no build step. Pages serves
-`/privacidade` and `/privacy` from the `.html` files, and those are the URLs to
-use in the store listing. The links inside the pages keep the `.html` extension
-so a plain static server can preview them.
+`apps/site` is the Astro static site served by Cloudflare Pages at
+`https://waytutor.marcio.run`. The landing page lives at `/` (pt-BR, the default
+language) with the English mirror at `/en/`, following the
+[Astro i18n recipe](https://docs.astro.build/en/recipes/i18n). The two policy
+docs stay at `/privacidade` (pt-BR) and `/privacy` (English), which are the URLs
+used in the store listing; old `.html` links redirect through `public/_redirects`.
 
 ```sh
-npx wrangler pages deploy apps/site --project-name waytutor-site
-python3 -m http.server 8000 --directory apps/site   # preview, then open :8000
+cd apps/site && npm run dev              # local dev
+npx wrangler pages deploy apps/site/dist --project-name waytutor-site
 ```
 
 ## Check

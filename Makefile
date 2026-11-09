@@ -1,6 +1,7 @@
 api = apps/api
 extension = apps/extension
 bot = apps/bot
+site = apps/site
 
 .PHONY: up down dev migrate test fmt vet build check
 
@@ -33,6 +34,7 @@ build:
 	cd $(api) && go build ./...
 	cd $(extension) && npm run build
 	cd $(bot) && go build ./...
+	cd $(site) && npm run build
 
 check:
 	@cd $(api) && test -z "$$(gofmt -l .)" || (gofmt -l . && exit 1)
@@ -40,3 +42,4 @@ check:
 	make vet
 	make test
 	cd $(extension) && npm run typecheck
+	cd $(site) && npm run check

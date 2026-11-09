@@ -1,0 +1,19 @@
+{
+  "name": "waytutor-site",
+  "version": "1.0.0",
+  "description": "Product site for WayTutor, served at waytutor.marcio.run",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^7.3.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^6.0.3"
+  }
+}

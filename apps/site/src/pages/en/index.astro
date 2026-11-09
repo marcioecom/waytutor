@@ -1,0 +1,309 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import panel from '../../assets/waytutor-panel.png';
+import states from '../../assets/waytutor-states.png';
+
+const storeUrl =
+  'https://chromewebstore.google.com/detail/waytutor/mijecohpljijnlcagmpdgcckpadfldah';
+const mailPremium = 'mailto:privacidade@marcio.run?subject=Test%20Premium';
+const mailInstitution = 'mailto:privacidade@marcio.run?subject=Institution';
+---
+
+<Base
+  title="WayTutor — your college material, read aloud"
+  description="Chrome extension that reads your college portal material aloud, keeps your place and hands you a spoken summary when it ends."
+>
+  <header class="hero">
+    <div>
+      <p class="hero__brow">Chrome extension · Beta</p>
+      <h1>Your college material, read aloud, without losing your place.</h1>
+      <p class="hero__lede">
+        The extension reads the portal topic paragraph by paragraph, remembers where
+        you stopped and hands you a spoken summary in the end. Follow along on the text
+        or just listen on the way.
+      </p>
+
+      <div class="hero__actions">
+        <a href={storeUrl} class="button button--primary">Add to Chrome</a>
+        <a href="#plans" class="button button--secondary">See plans</a>
+      </div>
+
+      <p class="product-meta"><strong>Platform:</strong> Chrome 116+ (side panel)</p>
+      <p class="product-meta"><strong>Portal:</strong> Brightspace HTML topics (Católica)</p>
+      <p class="product-meta"><strong>Version:</strong> 0.1.0 on the Chrome Web Store, Nov 6 2026</p>
+    </div>
+
+    <div class="hero__media">
+      <Image
+        src={panel}
+        widths={[390, 780, 1170]}
+        format="webp"
+        alt="The WayTutor panel reading a topic: a capybara professor beside a banker's lamp and a stack of books, progress shown on a pocket watch."
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </header>
+
+  <section class="section split">
+    <h2>The problem</h2>
+    <p>
+      Studying through your college portal means reading long text on a screen that was
+      not made for reading. Material piles up, topics stack, and reading gets harder at
+      night. WayTutor came out of a real routine: turn the topic into a read-aloud
+      session without losing your place and without turning studying into an audiobook
+      player.
+    </p>
+    <p>
+      It opens in the Chrome side panel, next to the text. You can follow the words or
+      just listen.
+    </p>
+  </section>
+
+  <section class="section split">
+    <h2>How it works</h2>
+    <div class="how">
+      <div>
+        <h3>Extracts the topic text</h3>
+        <p>
+          The panel finds the content inside the portal viewer and skips menus, credits,
+          references and boilerplate. Lists become a single Passage; tables are read row
+          by row. The title comes from the topic, not from the first heading on the page.
+        </p>
+      </div>
+      <div>
+        <h3>Reads by passage, with a real voice</h3>
+        <p>
+          Each paragraph becomes a Passage and one voice call. Audio is cached and the
+          next two passages are prefetched, so reading never stalls. Favorite voices
+          stay at the top of the picker.
+        </p>
+      </div>
+      <div>
+        <h3>Pauses at figures</h3>
+        <p>
+          On a figure, WayTutor goes quiet for a few seconds, 0 to 10, configurable, so
+          you can look at the image before reading continues. No announcement, no
+          description, no caption read aloud.
+        </p>
+      </div>
+      <div>
+        <h3>Picks up where you stopped</h3>
+        <p>
+          The listening session is saved per material, even after closing the panel or
+          waiting. Switching topics resets the state, but coming back to the same
+          material returns you to the passage you were on.
+        </p>
+      </div>
+      <div>
+        <h3>A summary in the end</h3>
+        <p>
+          When the reading ends, the panel generates a spoken summary of 2 to 4 minutes,
+          anchored only in what the material says. You can also jump straight to the
+          summary without synthesizing the earlier passages.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section split">
+    <h2>The Study</h2>
+    <p>
+      The panel is a study desk at night: a capybara professor, a brass banker's lamp,
+      a stack of books and a pocket watch. The watch is progress. The lamp is state:
+      lit while reading, warming up while preparing, low when paused or failing. The
+      capybara blinks, tilts its head when you pause and opens its eyes when something
+      breaks. Nothing covers the text or fights for attention.
+    </p>
+    <figure class="states">
+      <Image
+        src={states}
+        widths={[1024, 2064]}
+        format="webp"
+        alt="Four panel states: reading, preparing, paused and error, each with the capybara and the lamp at a different light intensity."
+        loading="lazy"
+      />
+      <figcaption>Reading, preparing, paused and error. The lamp does not move: the light does.</figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="plans">
+    <h2>Plans</h2>
+    <p>
+      Launch prices, in Brazilian reais (BRL). Approved accounts stay on the beta free
+      of charge. Premium goes live once billing ships in the app; you will get an email
+      when you ask for it.
+    </p>
+
+    <div class="plans__grid">
+      <article class="plan">
+        <h3>Free</h3>
+        <p class="plan__price">R$ 0<small>/month</small></p>
+        <p class="plan__pitch">To get to know it.</p>
+        <ul>
+          <li>Read aloud with the Chrome voice, no minute limit</li>
+          <li>Saved position, highlights and reading speed</li>
+          <li>2 spoken summaries per month</li>
+        </ul>
+        <a href={storeUrl} class="button button--secondary">Add to Chrome</a>
+        <p class="plan__trigger">Install now: you join the beta clearance queue.</p>
+      </article>
+
+      <article class="plan plan--recommended">
+        <h3>Premium <span class="plan__flag">Recommended</span></h3>
+        <p class="plan__price">R$ 29<small>/month</small></p>
+        <p class="plan__pitch"><strong>R$ 279/year</strong> (20% off) · For the semester.</p>
+        <ul>
+          <li>90 minutes of professor voice per month, about 112 min at 1.25×</li>
+          <li>10 spoken summaries</li>
+          <li>6 Gemini voices</li>
+        </ul>
+        <a href={mailPremium} class="button button--primary">I want to try Premium</a>
+        <p class="plan__trigger">7-day trial, no card. Goes live with the first cohort.</p>
+      </article>
+
+      <article class="plan">
+        <h3>Institution</h3>
+        <p class="plan__price">R$ 18<small>/student/month</small></p>
+        <p class="plan__pitch">For the class.</p>
+        <ul>
+          <li>Class-wide default voice: course material is generated once and serves everyone</li>
+          <li>90 minutes of premium voice per student per month</li>
+          <li>Minimum of 30 students</li>
+        </ul>
+        <a href={mailInstitution} class="button button--secondary">Talk to us</a>
+      </article>
+    </div>
+
+    <p class="plans__note">
+      Paid plans bill in Pix. You can cancel any time: access runs to the end of the
+      paid period and nothing is lost.
+    </p>
+  </section>
+
+  <section class="section" id="install">
+    <h2>Install on Chrome</h2>
+    <p>
+      The extension is published on the Chrome Web Store as an unlisted item: it does
+      not show up in search and only installs through this link.
+    </p>
+    <ol class="install">
+      <li>
+        <div>
+          <strong>Add it to Chrome</strong>
+          <span>
+            Use the button at the top of the page and confirm “Add extension”.
+            Updates arrive on their own after that.
+          </span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Pin WayTutor to the toolbar</strong>
+          <span>
+            Click the puzzle piece icon, then the pin next to WayTutor.
+          </span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Sign in with Google</strong>
+          <span>
+            The panel opens when you click the icon. Sign in and wait for approval:
+            access is granted one account at a time.
+          </span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Open a portal topic</strong>
+          <span>
+            The panel lists the passages and the watch starts the reading.
+          </span>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section split">
+    <h2>Privacy</h2>
+    <p>
+      The material text goes to our server, which generates the audio and the summary
+      and caches audio so the same passage is never synthesized twice. Your Google
+      account password never touches our servers. There are no ads and no usage
+      analytics. The details are in the <a href="/privacy">privacy policy</a>, with a
+      version in <a href="/privacidade">Portuguese</a>.
+    </p>
+  </section>
+
+  <section class="section split">
+    <h2>FAQ</h2>
+    <ul class="faq">
+      <li>
+        <details>
+          <summary>The Chrome voice is bad.</summary>
+          <p>
+            Yes, it is robotic and misses technical terms. That is what Premium exists
+            for. The free voice is honest and it never runs out.
+          </p>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>90 minutes is not much.</summary>
+          <p>
+            That is about 6 topics of 20 min at 1.25×. And reading with the Chrome voice
+            is unlimited: the limit only applies to the premium voice.
+          </p>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>What if I hit the limit?</summary>
+          <p>
+            Premium audio stops and reading continues with the Chrome voice. No surprise
+            charge, no lockout.
+          </p>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>When can I cancel?</summary>
+          <p>Any time. Access lasts to the end of the paid period.</p>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>Does it work on my portal?</summary>
+          <p>
+            It works on HTML material from the college portal. We are validating with
+            distance-learning classes: if yours does not open, write to us.
+          </p>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>What about my data?</summary>
+          <p>
+            No audio or material text is stored under your name. The details are in the
+            <a href="/privacy">privacy policy</a>.
+          </p>
+        </details>
+      </li>
+    </ul>
+  </section>
+
+  <section class="section split">
+    <h2>Start with a topic today</h2>
+    <p>
+      Open any portal topic with the panel on and let the reading run. If a topic does
+      not open or the voice trips on a term, write to us: that is how the product gets
+      better every week.
+    </p>
+    <div class="final-cta">
+      <a href={storeUrl} class="button button--primary">Add to Chrome</a>
+      <a href="#plans" class="button button--secondary">Back to plans</a>
+    </div>
+  </section>
+</Base>

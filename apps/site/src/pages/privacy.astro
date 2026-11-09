@@ -1,0 +1,140 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="WayTutor privacy policy"
+  description="Which data WayTutor processes, for what purpose, for how long and with whom it is shared."
+  lang="en"
+>
+  <article class="section policy">
+    <h1>WayTutor privacy policy</h1>
+    <p class="version">Version 2, November 8th, 2026.</p>
+
+    <p>
+      WayTutor is a Chrome extension that reads your academic portal material aloud and
+      generates a spoken summary of it. This page describes which data the service
+      processes, for what purpose, for how long and with whom it is shared.
+    </p>
+
+    <h2>Who is responsible</h2>
+    <p>
+      WayTutor is operated by Márcio Júnior, a Waypoint Labs project. The contact for
+      any matter in this policy, including deletion requests, is
+      <a href="mailto:privacidade@marcio.run">privacidade@marcio.run</a>.
+    </p>
+
+    <h2>Which data we process</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Google account identifier, e-mail, name and profile photo URL</td>
+          <td>To identify who is using the service and grant access. The photo is not displayed anywhere today.</td>
+        </tr>
+        <tr>
+          <td>Text of the material passages, during reading</td>
+          <td>To generate the audio and the summary. It is the content the extension sent from the open page.</td>
+        </tr>
+        <tr>
+          <td>Generated audio</td>
+          <td>To be played and reused when someone else reads the same passage.</td>
+        </tr>
+        <tr>
+          <td>Usage counters: synthesized characters and summaries per month and per day</td>
+          <td>To enforce the monthly limit and estimate the cost of the service.</td>
+        </tr>
+        <tr>
+          <td>Access record: session creation and last-use dates, browser identifier</td>
+          <td>To keep the login for up to 7 days and allow revoking access.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The material text is not stored as text. What remains is the audio generated from
+      it and the counters. The password of your Google account never reaches us: sign-in
+      happens at Google itself.
+    </p>
+
+    <h2>What we keep in your browser</h2>
+    <p>
+      The extension keeps the access token, your preferences (voice, favorite voices,
+      speed and figure pause) and the reading position of each material in Chrome local
+      storage. We use no cookies, we do not track browsing and we do not read pages
+      outside portal addresses.
+    </p>
+
+    <h2>With whom we share</h2>
+    <ul>
+      <li><strong>Google</strong>, to authenticate your account and to convert text into speech.</li>
+      <li>
+        <strong>Vercel AI Gateway</strong>, which forwards the text to the model
+        providers in use: Google, for the voice, and OpenAI, for the summary. These
+        providers process the text to return the audio or the summary.
+      </li>
+      <li><strong>Cloudflare</strong>, which stores the audio files.</li>
+      <li>
+        <strong>Discord</strong>, which receives a technical alert when a request fails:
+        the route, the status code and the duration, with no user data.
+      </li>
+      <li><strong>Fly.io</strong>, hosting the server, and <strong>Neon</strong>, hosting the database.</li>
+    </ul>
+    <p>
+      We do not sell data, we do not use your data for advertising and we do not share
+      it with third parties for their own purposes. Use of data obtained through the
+      Google APIs follows the Google API Services User Data Policy, including the
+      Limited Use requirements.
+    </p>
+
+    <h2>Transfer outside Brazil</h2>
+    <p>
+      The providers above process data in other countries, mainly the United States.
+      The transfer happens to perform the service you requested, under article 33 of
+      the LGPD.
+    </p>
+
+    <h2>How long we keep it</h2>
+    <ul>
+      <li>Account and counters: while the account exists.</li>
+      <li>Access session: 7 days, renewed at each use, closed on logout.</li>
+      <li>Login code: 2 minutes, single use.</li>
+      <li>
+        Audio: indefinitely. The file is identified by a code computed from the text,
+        the voice and the model, not by account, so the cache does not record who
+        listened to what.
+      </li>
+    </ul>
+
+    <h2>Your rights</h2>
+    <p>
+      You can request confirmation of processing, access, correction, anonymization,
+      portability, deletion of the data and revocation of consent. Just write to
+      <a href="mailto:privacidade@marcio.run">privacidade@marcio.run</a>. We answer
+      within 15 days. Deleting the account removes access, sessions and counters;
+      audio already generated stays in the cache, because it cannot be linked to a
+      person.
+    </p>
+
+    <h2>Security</h2>
+    <p>
+      All traffic uses HTTPS. The access token is stored on the server only as a hash,
+      and each account is manually approved. Access can be paused or revoked at any
+      time.
+    </p>
+
+    <h2>Children and teenagers</h2>
+    <p>
+      The service is meant for higher education students and is not directed at anyone
+      under 18.
+    </p>
+
+    <h2>Changes to this policy</h2>
+    <p>When processing changes, this page is updated and the date at the top moves with it.</p>
+  </article>
+</Base>
